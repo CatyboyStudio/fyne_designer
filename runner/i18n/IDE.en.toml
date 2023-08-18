@@ -1,0 +1,11 @@
+[IDEWindow]
+Title = "WidgetView IDE"
+ConfirmTitle = "Confirm"
+
+TabScript = "Script"
+TabRuntime = "Runtime"
+
+[IDEWindow.PanelRuntime]
+Run = "Run"
+Clear = "Clear"
+ConfirmClear = "Clear?" 
