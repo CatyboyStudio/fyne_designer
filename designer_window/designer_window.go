@@ -28,6 +28,8 @@ type DesignerWindow struct {
 	toggleRightItem *fyne.MenuItem
 	toggleRefresh   func()
 
+	toolp *toolPanel
+
 	popupMessage  *fyne_widgets.PopupMessageManager
 	messageBox    *fyne.Container
 	messageShower fyne.CanvasObject

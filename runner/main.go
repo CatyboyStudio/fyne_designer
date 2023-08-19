@@ -2,8 +2,8 @@ package main
 
 import (
 	"fyne_designer/designer_window"
+	"fyne_designer/workspace"
 	"os"
-	"time"
 
 	"fyne.io/fyne/v2/app"
 	"github.com/CatyboyStudio/fyne_widgets"
@@ -25,10 +25,15 @@ func main() {
 	)
 	goapp_commons.InitI18N("i18n")
 
-	mainWindow := designer_window.NewDesignerWindow()
-	mainWindow.Show()
+	func() {
+		w := workspace.NewWorkspace()
+		defer w.Close()
 
-	myApp.Run()
+		mainWindow := designer_window.NewDesignerWindow()
+		mainWindow.Show()
 
-	time.Sleep(time.Second)
+		myApp.Run()
+	}()
+
+	// time.Sleep(time.Second)
 }

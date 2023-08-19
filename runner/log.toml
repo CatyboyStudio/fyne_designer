@@ -3,5 +3,5 @@ Level = "Info"
 Output = "Console"
 FileInfo = true
 
-["IDE.local"]
+[Workspace]
 Level = "Debug"

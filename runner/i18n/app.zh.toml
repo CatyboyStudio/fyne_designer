@@ -8,8 +8,8 @@ Quit = "退出"
 [MainMenu.View]
 Title = "视图"
 Toggle = "切换全尺寸界面"
-ToggleLeft = "切换显示左面板"
-ToggleRight = "切换显示右面板"
+ToggleLeft = "切换显示工具面板"
+ToggleRight = "切换显示属性面板"
 
 [MainMenu.Help]
 Title = "帮助"
@@ -17,3 +17,9 @@ Designer.Site = "产品网站"
 Designer.Github = "产品Github"
 Fyne.Doc = "Fyne文档"
 Fyne.Support = "Fyne支持"
+
+[ToolPanel.Workspace]
+Title = "工作区"
+
+[ToolPanel.UITree]
+Title = "树视角"

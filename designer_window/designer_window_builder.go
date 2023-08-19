@@ -45,15 +45,15 @@ func (this *DesignerWindow) on_PopupMessageData() {
 
 func (this *DesignerWindow) build_PopupMessageView() fyne.CanvasObject {
 	this.messageBox = container.NewVBox()
-	this.popupMessage.Data.AddListener(binding.NewDataListener(this.on_PopupMessageData))
-
 	mbar := container.NewPadded(this.messageBox)
 	g := container.NewMax(canvas.NewRectangle(color.RGBA{128, 128, 128, 64}), mbar)
-	b := container.NewBorder(nil, g, nil, nil)
-	s := container.NewVScroll(b)
+	s := container.NewVScroll(g)
+	m := fyne_widgets.NewMin(fyne.NewPos(-1, -1), s)
 	this.messageShower = s
 	this.messageShower.Hide()
-	return s
+
+	this.popupMessage.Data.AddListener(binding.NewDataListener(this.on_PopupMessageData))
+	return m
 }
 
 func (this *DesignerWindow) build_Designer() fyne.CanvasObject {
@@ -103,7 +103,7 @@ func (this *DesignerWindow) build_Designer_Content() fyne.CanvasObject {
 		return this.build_Designer_View()
 	} else {
 		if this.split3 == nil {
-			split := widgets.NewSplit3(widget.NewLabel("Left"), this.build_Designer_View(), widget.NewLabel("Right"))
+			split := widgets.NewSplit3(this.build_Tool_Panel(), this.build_Designer_View(), widget.NewLabel("Right"))
 			split.OffsetL = 0.25
 			split.OffsetT = 0.75
 			this.split3 = split
@@ -113,6 +113,13 @@ func (this *DesignerWindow) build_Designer_Content() fyne.CanvasObject {
 		this.split3.SetVisible(true, this.toggleRight)
 		return content
 	}
+}
+
+func (this *DesignerWindow) build_Tool_Panel() fyne.CanvasObject {
+	if this.toolp == nil {
+		this.toolp = newToolPanel()
+	}
+	return this.toolp.build()
 }
 
 func (this *DesignerWindow) build_Designer_View() fyne.CanvasObject {
