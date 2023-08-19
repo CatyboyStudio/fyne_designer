@@ -6,6 +6,7 @@ require (
 	fyne.io/fyne/v2 v2.3.5
 	github.com/CatyboyStudio/fyne_widgets v0.0.0
 	github.com/CatyboyStudio/goapp_commons v0.0.0
+	github.com/rs/zerolog v1.30.0
 )
 
 replace fyne.io/fyne/v2 v2.3.5 => ../../fyne_app_commons/fyne
@@ -51,7 +52,6 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.2.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/rs/zerolog v1.30.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect

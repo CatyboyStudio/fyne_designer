@@ -20,7 +20,8 @@ func main() {
 	myApp := app.NewWithID("FyneDesigner.CatyboyStudio")
 
 	goapp_commons.SupportLangs = append(goapp_commons.SupportLangs,
-		goapp_commons.NewLangInfo("zh-CHS"),
+		// goapp_commons.NewLangInfo("zh-CHS"),
+		goapp_commons.NewLangInfo("zh"),
 	)
 	goapp_commons.InitI18N("i18n")
 

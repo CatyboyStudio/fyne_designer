@@ -1,2 +1,19 @@
 [MainWindow]
-Title = "AIBot世界"
+Title = "Fyne设计器"
+
+[MainMenu.File]
+Title = "文件"
+Quit = "退出"
+
+[MainMenu.View]
+Title = "视图"
+Toggle = "切换全尺寸界面"
+ToggleLeft = "切换显示左面板"
+ToggleRight = "切换显示右面板"
+
+[MainMenu.Help]
+Title = "帮助"
+Designer.Site = "产品网站"
+Designer.Github = "产品Github"
+Fyne.Doc = "Fyne文档"
+Fyne.Support = "Fyne支持"
