@@ -2,7 +2,6 @@ package designer_window
 
 import (
 	"fyne_designer/workspace"
-	"time"
 )
 
 func (this *DesignerWindow) syncToggleValue() {
@@ -32,7 +31,7 @@ func (this *DesignerWindow) commandToggleInspectorPanel() {
 
 func (this *DesignerWindow) commandNewDocument() {
 	ExecWorkspaceTask(func(w *workspace.Workspace) error {
-		time.Sleep(time.Second * 5)
-		return nil
+		doc := workspace.NewDocument()
+		return w.OpenDocument(doc)
 	})
 }

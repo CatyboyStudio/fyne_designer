@@ -2,6 +2,7 @@ package designer_window
 
 import (
 	"fyne_designer/widgets"
+	"fyne_designer/workspace"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
@@ -34,6 +35,8 @@ type DesignerWindow struct {
 	messageBox    *fyne.Container
 	messageShower fyne.CanvasObject
 	loadErrId     int
+
+	lisid int
 }
 
 func NewDesignerWindow() *DesignerWindow {
@@ -64,6 +67,9 @@ func (this *DesignerWindow) Show() {
 	this.window.SetContent(this.build_Main())
 	fyne_widgets.ShowMaximizeWindow(this.window)
 	this.popupMessage.Start()
+	workspace.Current.AddListener(this.onWorkspaceEvent, func(id int) {
+		this.lisid = id
+	})
 }
 
 func (this *DesignerWindow) Close() {

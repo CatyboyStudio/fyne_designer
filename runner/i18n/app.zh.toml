@@ -25,5 +25,11 @@ Fyne.Support = "Fyne支持"
 [ToolPanel.Workspace]
 Title = "工作区"
 
+[ToolPanel.Workspace.Document]
+Title = "文档"
+
 [ToolPanel.UITree]
 Title = "树视角"
+
+[Document]
+Untitle = "未命名文档"

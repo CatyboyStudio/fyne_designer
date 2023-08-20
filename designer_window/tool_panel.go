@@ -9,6 +9,8 @@ import (
 
 type toolPanel struct {
 	content fyne.CanvasObject
+
+	docView *DocumentView
 }
 
 func newToolPanel() *toolPanel {
@@ -27,9 +29,28 @@ func (this *toolPanel) getContent() fyne.CanvasObject {
 func (this *toolPanel) build() fyne.CanvasObject {
 	M := goapp_commons.GetMessage
 	tabs := container.NewAppTabs(
+		container.NewTabItem(M("ToolPanel.Workspace.Title"), this.build_Workspae()),
 		container.NewTabItem(M("ToolPanel.UITree.Title"), widget.NewLabel("World!")),
-		container.NewTabItem(M("ToolPanel.Workspace.Title"), widget.NewLabel("Hello")),
 	)
 	tabs.SetTabLocation(container.TabLocationBottom)
 	return tabs
+}
+
+func (this *toolPanel) build_Workspae() fyne.CanvasObject {
+	M := goapp_commons.GetMessage
+	ac := widget.NewAccordion(
+		widget.NewAccordionItem(M("ToolPanel.Workspace.Document.Title"), this.build_Workspace_DocumentView()),
+		widget.NewAccordionItem("B", widget.NewLabel("Two")),
+	)
+	if ac != nil {
+
+	}
+	return this.build_Workspace_DocumentView()
+}
+
+func (this *toolPanel) build_Workspace_DocumentView() fyne.CanvasObject {
+	view := NewDocumentView()
+	this.docView = view
+	list := view.Build()
+	return container.NewMax(list)
 }

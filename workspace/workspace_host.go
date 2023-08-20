@@ -158,7 +158,7 @@ func (this *WorkspaceHost) Close() {
 	}
 }
 
-func (this *WorkspaceHost) AddListener(lis func(any), cb func(int)) bool {
+func (this *WorkspaceHost) AddListener(lis func(WSEvent), cb func(int)) bool {
 	return this.Post(func(w *Workspace) error {
 		w.lisid += 1
 		w.listeners[w.lisid] = lis
