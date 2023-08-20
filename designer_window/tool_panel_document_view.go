@@ -50,9 +50,18 @@ func (this *DocumentViewItem) CreateRenderer() fyne.WidgetRenderer {
 	this.build()
 	buttons := container.NewHBox(
 		canvas.NewRectangle(theme.ForegroundColor()),
-		widget.NewButtonWithIcon("", theme.DocumentSaveIcon(), nil),
-		widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), nil),
-		widget.NewButtonWithIcon("", theme.DeleteIcon(), nil),
+		widget.NewButtonWithIcon("", theme.DocumentSaveIcon(), func() {
+			key := this.GetText()
+			this.self.saveBy(key)
+		}),
+		widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), func() {
+			key := this.GetText()
+			this.self.reloadBy(key)
+		}),
+		widget.NewButtonWithIcon("", theme.CancelIcon(), func() {
+			key := this.GetText()
+			this.self.deleteBy(key)
+		}),
 	)
 	co := container.NewBorder(nil, nil, nil, buttons, this.label)
 	return widget.NewSimpleRenderer(co)
@@ -83,19 +92,19 @@ func (this *DocumentViewItem) build() {
 }
 
 type DocumentView struct {
-	codes    binding.StringList
-	codeList *widget.List
+	docs    binding.StringList
+	docList *widget.List
 }
 
 func NewDocumentView() *DocumentView {
 	return &DocumentView{
-		codes: binding.NewStringList(),
+		docs: binding.NewStringList(),
 	}
 }
 
 func (this *DocumentView) Build() fyne.CanvasObject {
 	list := widget.NewListWithData(
-		this.codes,
+		this.docs,
 		func() fyne.CanvasObject {
 			return NewDocumentViewItem(this)
 		},
@@ -105,49 +114,51 @@ func (this *DocumentView) Build() fyne.CanvasObject {
 			o.UpdateData(v)
 		},
 	)
-	this.codeList = list
+	this.docList = list
+	list.OnSelected = func(id widget.ListItemID) {
+		s, _ := this.docs.GetValue(id)
+		docid, _ := DocumentViewItem_SplitData(s)
+		ExecWorkspaceTask(func(w *workspace.Workspace) error {
+			return w.ActiveDocument(docid, true)
+		})
+	}
 	return list
 }
 
 func (this *DocumentView) addDocument(doc *workspace.Document) {
 	ss := DocumentViewItem_MakeData(doc.GetId(), doc.GetTitle())
 	if ss != "" {
-		this.codes.Append(ss)
+		this.docs.Append(ss)
+	}
+}
+
+func (this *DocumentView) removeDocument(doc *workspace.Document) {
+	ss := DocumentViewItem_MakeData(doc.GetId(), doc.GetTitle())
+	if ss != "" {
+		slist, _ := this.docs.Get()
+		nlist := arrutil.StringsRemove(slist, ss)
+		this.docs.Set(nlist)
+		this.docList.Refresh()
 	}
 }
 
 func (this *DocumentView) deleteBy(s string) {
-	slist, _ := this.codes.Get()
-	nlist := arrutil.Remove[string](slist, s)
-	this.codes.Set(nlist)
+	docid, _ := DocumentViewItem_SplitData(s)
+	ExecWorkspaceTask(func(w *workspace.Workspace) error {
+		return w.CloseDocument(docid)
+	})
 }
 
 func (this *DocumentView) saveBy(s string) {
-	slist, _ := this.codes.Get()
-	for i, v := range slist {
-		if v == s {
-			if i > 0 {
-				slist[i], slist[i-1] = slist[i-1], slist[i]
-				nlist := arrutil.CloneSlice[string](slist)
-				this.codes.Set(nlist)
-				this.codeList.Refresh()
-				return
-			}
-		}
-	}
+	docid, _ := DocumentViewItem_SplitData(s)
+	ExecWorkspaceTask(func(w *workspace.Workspace) error {
+		return w.SaveDocument(docid)
+	})
 }
 
 func (this *DocumentView) reloadBy(s string) {
-	slist, _ := this.codes.Get()
-	for i, v := range slist {
-		if v == s {
-			if i < len(slist)-1 {
-				slist[i], slist[i+1] = slist[i+1], slist[i]
-				nlist := arrutil.CloneSlice[string](slist)
-				this.codes.Set(nlist)
-				this.codeList.Refresh()
-				return
-			}
-		}
-	}
+	docid, _ := DocumentViewItem_SplitData(s)
+	ExecWorkspaceTask(func(w *workspace.Workspace) error {
+		return w.ReloadDocument(docid)
+	})
 }

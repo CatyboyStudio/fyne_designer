@@ -2,9 +2,12 @@ package workspace
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 
 	"github.com/CatyboyStudio/goapp_commons"
 	gonanoid "github.com/matoous/go-nanoid/v2"
+	"github.com/pkg/errors"
 )
 
 const DOC_EXT = ".doc.toml"
@@ -42,4 +45,32 @@ func (this *Document) GetTitle() string {
 		return t
 	}
 	return this.title
+}
+
+func (this *Document) updateTitle() {
+	if this.Filepath != "" {
+		n := filepath.Base(this.Filepath)
+		if strings.HasSuffix(n, DOC_EXT) {
+			n = n[:len(n)-len(DOC_EXT)]
+		}
+		this.title = n
+	}
+}
+
+func (this *Document) ToJson() map[string]any {
+	ret := make(map[string]any)
+	ret["Id"] = this.id
+	ret["Package"] = this.PackageName
+	ret["GenFile"] = this.GenFilepath
+	return ret
+}
+
+func (this *Document) FromJson(data map[string]any) error {
+	this.id = goapp_commons.GetValue[string](data, "Id", "")
+	if this.id == "" {
+		return errors.New("Document miss [Id]")
+	}
+	this.PackageName = goapp_commons.GetValue[string](data, "Package", "")
+	this.GenFilepath = goapp_commons.GetValue[string](data, "GenFile", "")
+	return nil
 }
