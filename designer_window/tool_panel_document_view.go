@@ -11,7 +11,6 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/CatyboyStudio/fyne_widgets"
 	"github.com/gookit/goutil/arrutil"
 )
 
@@ -29,33 +28,37 @@ func DocumentViewItem_MakeData(id, title string) string {
 	return fmt.Sprintf("%s:%s", id, title)
 }
 
-type DocumentViewItemBuilder struct {
+type DocumentViewItem struct {
+	widget.BaseWidget
 	self *DocumentView
 	Data binding.String
 
 	label *widget.Label
 }
 
-func NewDocumentViewItemBuilder(self *DocumentView) fyne_widgets.WidgetBuilder {
-	o := &DocumentViewItemBuilder{
+func NewDocumentViewItem(self *DocumentView) *DocumentViewItem {
+	o := &DocumentViewItem{
 		self: self,
 	}
+	o.ExtendBaseWidget(o)
 	return o
 }
 
-// Build implements fyne_widgets.WidgetBuilder.
-func (this *DocumentViewItemBuilder) Build() fyne.CanvasObject {
-	this.label = widget.NewLabel(this.GetText())
+// CreateRenderer implements fyne.Widget.
+func (this *DocumentViewItem) CreateRenderer() fyne.WidgetRenderer {
+	this.label = widget.NewLabel("")
+	this.build()
 	buttons := container.NewHBox(
 		canvas.NewRectangle(theme.ForegroundColor()),
 		widget.NewButtonWithIcon("", theme.DocumentSaveIcon(), nil),
 		widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), nil),
 		widget.NewButtonWithIcon("", theme.DeleteIcon(), nil),
 	)
-	return container.NewBorder(nil, nil, nil, buttons, this.label)
+	co := container.NewBorder(nil, nil, nil, buttons, this.label)
+	return widget.NewSimpleRenderer(co)
 }
 
-func (this *DocumentViewItemBuilder) GetText() string {
+func (this *DocumentViewItem) GetText() string {
 	text := ""
 	if this.Data != nil {
 		text, _ = this.Data.Get()
@@ -63,13 +66,20 @@ func (this *DocumentViewItemBuilder) GetText() string {
 	return text
 }
 
-func (this *DocumentViewItemBuilder) UpdateData(data binding.String) {
+func (this *DocumentViewItem) UpdateData(data binding.String) {
 	this.Data = data
-	s := this.GetText()
-	if s != "" {
-		_, s = DocumentViewItem_SplitData(s)
+	this.build()
+	this.label.Refresh()
+}
+
+func (this *DocumentViewItem) build() {
+	if this.label != nil {
+		s := this.GetText()
+		if s != "" {
+			_, s = DocumentViewItem_SplitData(s)
+		}
+		this.label.Text = s
 	}
-	this.label.Text = s
 }
 
 type DocumentView struct {
@@ -87,18 +97,12 @@ func (this *DocumentView) Build() fyne.CanvasObject {
 	list := widget.NewListWithData(
 		this.codes,
 		func() fyne.CanvasObject {
-			b := NewDocumentViewItemBuilder(this)
-			return fyne_widgets.NewStatefuleWidget(b)
+			return NewDocumentViewItem(this)
 		},
 		func(di binding.DataItem, co fyne.CanvasObject) {
 			v := di.(binding.String)
-			b := fyne_widgets.GetStatefuleWidgetBuilder(co)
-			if b != nil {
-				if o, ok := b.(*DocumentViewItemBuilder); ok {
-					o.UpdateData(v)
-					co.Refresh()
-				}
-			}
+			o := co.(*DocumentViewItem)
+			o.UpdateData(v)
 		},
 	)
 	this.codeList = list
