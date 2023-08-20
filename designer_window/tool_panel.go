@@ -4,6 +4,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/CatyboyStudio/fyne_widgets"
 	"github.com/CatyboyStudio/goapp_commons"
 )
 
@@ -38,14 +39,12 @@ func (this *toolPanel) build() fyne.CanvasObject {
 
 func (this *toolPanel) build_Workspae() fyne.CanvasObject {
 	M := goapp_commons.GetMessage
-	ac := widget.NewAccordion(
+	ac := fyne_widgets.NewAccordionBox(
 		widget.NewAccordionItem(M("ToolPanel.Workspace.Document.Title"), this.build_Workspace_DocumentView()),
 		widget.NewAccordionItem("B", widget.NewLabel("Two")),
 	)
-	if ac != nil {
-
-	}
-	return this.build_Workspace_DocumentView()
+	ac.Items[0].Open = true
+	return ac
 }
 
 func (this *toolPanel) build_Workspace_DocumentView() fyne.CanvasObject {
