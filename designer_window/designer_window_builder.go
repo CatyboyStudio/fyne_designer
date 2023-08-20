@@ -48,7 +48,7 @@ func (this *DesignerWindow) build_PopupMessageView() fyne.CanvasObject {
 	mbar := container.NewPadded(this.messageBox)
 	g := container.NewMax(canvas.NewRectangle(color.RGBA{128, 128, 128, 64}), mbar)
 	s := container.NewVScroll(g)
-	m := fyne_widgets.NewMin(fyne.NewPos(-1, -1), s)
+	m := NewMessageBox(fyne.NewPos(-1, -1), s)
 	this.messageShower = s
 	this.messageShower.Hide()
 

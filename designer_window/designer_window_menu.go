@@ -1,11 +1,8 @@
 package designer_window
 
 import (
-	"fmt"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/driver/desktop"
-	"fyne.io/fyne/v2/theme"
 	"github.com/CatyboyStudio/fyne_widgets"
 	"github.com/CatyboyStudio/goapp_commons"
 )
@@ -18,27 +15,9 @@ func (this *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 	w := this.window
 	M := goapp_commons.GetMessage
 
-	newItem := fyne.NewMenuItem("New", nil)
-	checkedItem := fyne.NewMenuItem("Checked", nil)
-	checkedItem.Checked = true
-	disabledItem := fyne.NewMenuItem("Disabled", nil)
-	disabledItem.Disabled = true
-	otherItem := fyne.NewMenuItem("Other", nil)
-	mailItem := fyne.NewMenuItem("Mail", func() { fmt.Println("Menu New->Other->Mail") })
-	mailItem.Icon = theme.MailComposeIcon()
-	otherItem.ChildMenu = fyne.NewMenu("",
-		fyne.NewMenuItem("Project", func() { fmt.Println("Menu New->Other->Project") }),
-		mailItem,
-	)
-	fileItem := fyne.NewMenuItem("File", func() { fmt.Println("Menu New->File") })
-	fileItem.Icon = theme.FileIcon()
-	dirItem := fyne.NewMenuItem("Directory", func() { fmt.Println("Menu New->Directory") })
-	dirItem.Icon = theme.FolderIcon()
-	newItem.ChildMenu = fyne.NewMenu("",
-		fileItem,
-		dirItem,
-		otherItem,
-	)
+	newItem := fyne.NewMenuItem(M("MainMenu.File.NewDocument"), func() {
+		this.commandNewDocument()
+	})
 
 	// openSettings := func() {
 	// 	w := a.NewWindow("Fyne Settings")
@@ -58,12 +37,12 @@ func (this *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 	})
 	quitItem.IsQuit = true
 	file := fyne.NewMenu(M("MainMenu.File.Title"),
-		newItem, checkedItem, disabledItem,
+		newItem,
 		// fyne.NewMenuItemSeparator(), settingsItem,
 		fyne.NewMenuItemSeparator(), quitItem,
 	)
 
-	performToggle := this.toggleView
+	performToggle := this.commandToggleView
 	toggleItem := fyne.NewMenuItem(M("MainMenu.View.Toggle"), performToggle)
 	toggleItem.Shortcut = &desktop.CustomShortcut{
 		KeyName:  fyne.KeyF5,
@@ -72,9 +51,9 @@ func (this *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 	w.Canvas().AddShortcut(toggleItem.Shortcut, func(shortcut fyne.Shortcut) {
 		performToggle()
 	})
-	this.toggleLeftItem = fyne.NewMenuItem(M("MainMenu.View.ToggleLeft"), this.toggleLeftPanel)
+	this.toggleLeftItem = fyne.NewMenuItem(M("MainMenu.View.ToggleLeft"), this.commandToggleToolPanel)
 	this.toggleLeftItem.Checked = this.toggleLeft
-	this.toggleRightItem = fyne.NewMenuItem(M("MainMenu.View.ToggleRight"), this.toggleRightPanel)
+	this.toggleRightItem = fyne.NewMenuItem(M("MainMenu.View.ToggleRight"), this.commandToggleInspectorPanel)
 	this.toggleRightItem.Checked = this.toggleRight
 
 	view := fyne.NewMenu(M("MainMenu.View.Title"),
@@ -104,9 +83,5 @@ func (this *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 		view,
 		help,
 	)
-	checkedItem.Action = func() {
-		checkedItem.Checked = !checkedItem.Checked
-		main.Refresh()
-	}
 	return main
 }

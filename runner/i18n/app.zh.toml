@@ -1,8 +1,12 @@
 [MainWindow]
 Title = "Fyne设计器"
+[MainWindow.Progress]
+Title = "处理中"
+Close = "隐藏"
 
 [MainMenu.File]
 Title = "文件"
+NewDocument = "新建文档"
 Quit = "退出"
 
 [MainMenu.View]

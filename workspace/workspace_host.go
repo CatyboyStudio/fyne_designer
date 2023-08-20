@@ -3,10 +3,19 @@ package workspace
 import (
 	"runtime/debug"
 	"sync/atomic"
+	"time"
 
 	"github.com/CatyboyStudio/goapp_commons"
 	"github.com/rs/zerolog"
 )
+
+type WorkspaceProgress interface {
+	ShowDelay() time.Duration
+	Show()
+	Close()
+}
+
+type WorkspaceExecutor func(w *Workspace) error
 
 var Current *WorkspaceHost
 
@@ -21,8 +30,6 @@ func NewWorkspace() *WorkspaceHost {
 	Current = w
 	return w
 }
-
-type WorkspaceExecutor func(w *Workspace) error
 
 type WorkspaceHost struct {
 	log zerolog.Logger
@@ -40,16 +47,6 @@ func (this *WorkspaceHost) exec(f WorkspaceExecutor) bool {
 	case this.execs <- f:
 		return true
 	}
-}
-
-func (this *WorkspaceHost) Queue(f WorkspaceExecutor) {
-	go func() {
-		this.exec(f)
-	}()
-}
-
-func (this *WorkspaceHost) Exec(f WorkspaceExecutor) bool {
-	return this.exec(f)
 }
 
 func (this *WorkspaceHost) doInit() error {
@@ -118,12 +115,73 @@ func (this *WorkspaceHost) _exec(f WorkspaceExecutor) {
 	}
 }
 
+func (this *WorkspaceHost) shutdown() {
+	atomic.StoreInt32(&this.status, -2)
+}
+
+func (this *WorkspaceHost) Exec(f WorkspaceExecutor, wp WorkspaceProgress) bool {
+	if wp == nil {
+		return this.Post(f)
+	}
+	ret := make(chan any)
+	b := this.exec(func(w *Workspace) error {
+		defer func() {
+			close(ret)
+		}()
+		return f(w)
+	})
+	if !b {
+		return false
+	}
+	go func() {
+		tm := time.NewTimer(wp.ShowDelay())
+		defer tm.Stop()
+		select {
+		case <-ret:
+			return
+		case <-tm.C:
+			wp.Show()
+		}
+		defer wp.Close()
+		<-ret
+	}()
+	return b
+}
+
+func (this *WorkspaceHost) Post(f WorkspaceExecutor) bool {
+	return this.exec(f)
+}
+
 func (this *WorkspaceHost) Close() {
 	if atomic.CompareAndSwapInt32(&this.status, 1, -1) {
 		close(this.closeC)
 	}
 }
 
-func (this *WorkspaceHost) shutdown() {
-	atomic.StoreInt32(&this.status, -2)
+func (this *WorkspaceHost) AddListener(lis func(any), cb func(int)) bool {
+	return this.Post(func(w *Workspace) error {
+		w.lisid += 1
+		w.listeners[w.lisid] = lis
+		if cb != nil {
+			cb(w.lisid)
+		}
+		return nil
+	})
+}
+
+func (this *WorkspaceHost) RemoveListener(id int) {
+	this.Post(func(w *Workspace) error {
+		delete(w.listeners, id)
+		return nil
+	})
+}
+
+func ExecWorkspaceTask(f WorkspaceExecutor, wp WorkspaceProgress) bool {
+	c := Current
+	if c == nil {
+		return false
+	}
+	return c.Exec(func(w *Workspace) error {
+		return f(w)
+	}, wp)
 }

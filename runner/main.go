@@ -31,9 +31,8 @@ func main() {
 
 		mainWindow := designer_window.NewDesignerWindow()
 		mainWindow.Show()
+		// testui()
 
 		myApp.Run()
 	}()
-
-	// time.Sleep(time.Second)
 }
