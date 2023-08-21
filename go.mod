@@ -9,12 +9,6 @@ require (
 	github.com/rs/zerolog v1.30.0
 )
 
-replace fyne.io/fyne/v2 v2.3.5 => ../../fyne_app_commons/fyne
-
-replace github.com/CatyboyStudio/goapp_commons => ../../fyne_app_commons/goapp_commons
-
-replace github.com/CatyboyStudio/fyne_widgets => ../../fyne_app_commons/fyne_widgets
-
 require (
 	fyne.io/systray v1.10.1-0.20230602210930-b6a2d6ca2a7b // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
