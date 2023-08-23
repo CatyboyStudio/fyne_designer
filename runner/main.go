@@ -5,15 +5,16 @@ import (
 	"fyne_designer/workspace"
 	"os"
 
+	"goapp_commons"
+	"goapp_fyne"
+
 	"fyne.io/fyne/v2/app"
-	"github.com/CatyboyStudio/fyne_widgets"
-	"github.com/CatyboyStudio/goapp_commons"
 )
 
 func main() {
 	goapp_commons.Init("config.toml", "log.toml")
 
-	fyne_widgets.InitFont()
+	goapp_fyne.InitFont()
 	defer os.Unsetenv("FYNE_FONT")
 
 	os.Setenv("FYNE_THEME", "dark")

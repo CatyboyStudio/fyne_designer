@@ -1,11 +1,12 @@
 package designer_window
 
 import (
+	"goapp_commons"
+	"goapp_fyne"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/CatyboyStudio/fyne_widgets"
-	"github.com/CatyboyStudio/goapp_commons"
 )
 
 type toolPanel struct {
@@ -39,7 +40,7 @@ func (this *toolPanel) build() fyne.CanvasObject {
 
 func (this *toolPanel) build_Workspae() fyne.CanvasObject {
 	M := goapp_commons.GetMessage
-	ac := fyne_widgets.NewAccordionBox(
+	ac := goapp_fyne.NewAccordionBox(
 		widget.NewAccordionItem(M("ToolPanel.Workspace.Document.Title"), this.build_Workspace_DocumentView()),
 		widget.NewAccordionItem("B", widget.NewLabel("Two")),
 	)

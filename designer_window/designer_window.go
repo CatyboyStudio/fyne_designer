@@ -3,11 +3,11 @@ package designer_window
 import (
 	"fyne_designer/widgets"
 	"fyne_designer/workspace"
+	"goapp_commons"
+	"goapp_fyne"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
-	"github.com/CatyboyStudio/fyne_widgets"
-	"github.com/CatyboyStudio/goapp_commons"
 	"github.com/rs/zerolog"
 )
 
@@ -31,7 +31,7 @@ type DesignerWindow struct {
 
 	toolp *toolPanel
 
-	popupMessage  *fyne_widgets.PopupMessageManager
+	popupMessage  *goapp_fyne.PopupMessageManager
 	messageBox    *fyne.Container
 	messageShower fyne.CanvasObject
 	loadErrId     int
@@ -48,7 +48,7 @@ func NewDesignerWindow() *DesignerWindow {
 		toggleRight: true,
 		log:         goapp_commons.NewLog("MainWindow"),
 	}
-	o.popupMessage = fyne_widgets.NewPopupMessageManager()
+	o.popupMessage = goapp_fyne.NewPopupMessageManager()
 	o.window.SetOnClosed(o.shutdown)
 	MainWindow = o
 	win.SetMainMenu(o.build_MainMenu())
@@ -65,7 +65,7 @@ func (this *DesignerWindow) shutdown() {
 func (this *DesignerWindow) Show() {
 	this.window.Resize(fyne.NewSize(740, 480))
 	this.window.SetContent(this.build_Main())
-	fyne_widgets.ShowMaximizeWindow(this.window)
+	goapp_fyne.ShowMaximizeWindow(this.window)
 	this.popupMessage.Start()
 	workspace.Current.AddListener(this.onWorkspaceEvent, func(id int) {
 		this.lisid = id

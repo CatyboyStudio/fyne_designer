@@ -1,11 +1,11 @@
 package workspace
 
 import (
+	"goapp_commons"
 	"runtime/debug"
 	"sync/atomic"
 	"time"
 
-	"github.com/CatyboyStudio/goapp_commons"
 	"github.com/rs/zerolog"
 )
 

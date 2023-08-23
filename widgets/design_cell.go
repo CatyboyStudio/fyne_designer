@@ -1,12 +1,12 @@
 package widgets
 
 import (
+	"goapp_fyne"
 	"image/color"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/widget"
-	"github.com/CatyboyStudio/fyne_widgets"
 )
 
 type DesignCellConfigData struct {
@@ -22,7 +22,7 @@ var DesignCellConfig = DesignCellConfigData{}
 func (this DesignCellConfigData) getColor(p color.Color, prefn string, defv func() color.Color) color.Color {
 	if p == nil {
 		s := fyne.CurrentApp().Preferences().String(prefn)
-		c, ok := fyne_widgets.ParseColor(s)
+		c, ok := goapp_fyne.ParseColor(s)
 		if !ok {
 			c = defv()
 		}
@@ -37,7 +37,7 @@ func (this DesignCellConfigData) GetSizeFillColor() color.Color {
 
 func (this DesignCellConfigData) GetSizeBorderColor() color.Color {
 	this.SizeBorderColor = this.getColor(this.SizeBorderColor, "DesignCellSizeBorderColor", func() color.Color {
-		return fyne_widgets.StrToColor("blue")
+		return goapp_fyne.StrToColor("blue")
 	})
 	return this.SizeBorderColor
 }
@@ -48,7 +48,7 @@ func (this DesignCellConfigData) GetMinSizeFillColor() color.Color {
 
 func (this DesignCellConfigData) GetMinSizeBorderColor() color.Color {
 	this.MinSizeBorderColor = this.getColor(this.SizeBorderColor, "DesignCellSizeBorderColor", func() color.Color {
-		return fyne_widgets.StrToColor("red")
+		return goapp_fyne.StrToColor("red")
 	})
 	return this.MinSizeBorderColor
 }
@@ -114,7 +114,7 @@ func (this *DesignCellWidget) CreateRenderer() fyne.WidgetRenderer {
 }
 
 type designCellWidgetRenderer struct {
-	fyne_widgets.BaseRenderer
+	goapp_fyne.BaseRenderer
 	self        *DesignCellWidget
 	rectSize    *canvas.Rectangle
 	rectMinSize *canvas.Rectangle
@@ -161,7 +161,7 @@ func (this *designCellWidgetRenderer) syncData() {
 		this.rectSize.Show()
 		this.rectMinSize.Show()
 		if msz.Width > sz.Width || msz.Height > sz.Height {
-			this.rectSize.StrokeColor = fyne_widgets.ColorWithAlpha(this.rectSize.StrokeColor, 0.5)
+			this.rectSize.StrokeColor = goapp_fyne.ColorWithAlpha(this.rectSize.StrokeColor, 0.5)
 			objects := []fyne.CanvasObject{
 				this.self.Content,
 				this.rectMinSize,
@@ -169,7 +169,7 @@ func (this *designCellWidgetRenderer) syncData() {
 			}
 			this.SetObjects(objects)
 		} else {
-			this.rectMinSize.StrokeColor = fyne_widgets.ColorWithAlpha(this.rectMinSize.StrokeColor, 0.5)
+			this.rectMinSize.StrokeColor = goapp_fyne.ColorWithAlpha(this.rectMinSize.StrokeColor, 0.5)
 			objects := []fyne.CanvasObject{
 				this.self.Content,
 				this.rectSize,

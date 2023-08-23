@@ -4,8 +4,6 @@ go 1.18
 
 require (
 	fyne.io/fyne/v2 v2.3.5
-	github.com/CatyboyStudio/fyne_widgets v0.0.0
-	github.com/CatyboyStudio/goapp_commons v0.0.0
 	github.com/rs/zerolog v1.30.0
 )
 

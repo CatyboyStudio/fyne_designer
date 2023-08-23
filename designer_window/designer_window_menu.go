@@ -1,10 +1,11 @@
 package designer_window
 
 import (
+	"goapp_commons"
+	"goapp_fyne"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/driver/desktop"
-	"github.com/CatyboyStudio/fyne_widgets"
-	"github.com/CatyboyStudio/goapp_commons"
 )
 
 const DESIGNER_SITE = "https://catyboy.itch.io/"
@@ -64,17 +65,17 @@ func (this *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 
 	help := fyne.NewMenu(M("MainMenu.Help.Title"),
 		fyne.NewMenuItem(M("MainMenu.Help.Designer.Site"), func() {
-			fyne_widgets.OpenURL(DESIGNER_SITE)
+			goapp_fyne.OpenURL(DESIGNER_SITE)
 		}),
 		fyne.NewMenuItem(M("MainMenu.Help.Designer.Github"), func() {
-			fyne_widgets.OpenURL(DESIGNER_GITHUB)
+			goapp_fyne.OpenURL(DESIGNER_GITHUB)
 		}),
 		fyne.NewMenuItemSeparator(),
 		fyne.NewMenuItem(M("MainMenu.Help.Fyne.Doc"), func() {
-			fyne_widgets.OpenURL("https://developer.fyne.io")
+			goapp_fyne.OpenURL("https://developer.fyne.io")
 		}),
 		fyne.NewMenuItem(M("MainMenu.Help.Fyne.Support"), func() {
-			fyne_widgets.OpenURL("https://fyne.io/support/")
+			goapp_fyne.OpenURL("https://fyne.io/support/")
 		}),
 	)
 

@@ -2,11 +2,11 @@ package main
 
 import (
 	"fyne_designer/widgets"
+	"goapp_fyne"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/CatyboyStudio/fyne_widgets"
 )
 
 func testui() {
@@ -27,5 +27,5 @@ func testui() {
 	win := fyne.CurrentApp().NewWindow("Test")
 	win.Resize(fyne.NewSize(740, 480))
 	win.SetContent(co)
-	fyne_widgets.ShowMaximizeWindow(win)
+	goapp_fyne.ShowMaximizeWindow(win)
 }

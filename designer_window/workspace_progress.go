@@ -2,13 +2,13 @@ package designer_window
 
 import (
 	"fyne_designer/workspace"
+	"goapp_commons"
 	"sync/atomic"
 	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"github.com/CatyboyStudio/goapp_commons"
 )
 
 type wsProgress struct {

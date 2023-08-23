@@ -2,10 +2,10 @@ package workspace
 
 import (
 	"fmt"
+	"goapp_commons"
 	"path/filepath"
 	"strings"
 
-	"github.com/CatyboyStudio/goapp_commons"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/pkg/errors"
 )

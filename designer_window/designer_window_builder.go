@@ -2,6 +2,7 @@ package designer_window
 
 import (
 	"fyne_designer/widgets"
+	"goapp_fyne"
 	"image/color"
 	"log"
 
@@ -11,7 +12,6 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/CatyboyStudio/fyne_widgets"
 )
 
 func (this *DesignerWindow) build_Main() fyne.CanvasObject {
@@ -26,7 +26,7 @@ func (this *DesignerWindow) on_PopupMessageData() {
 	list, _ := this.popupMessage.Data.Get()
 	this.messageBox.RemoveAll()
 	for _, v := range list {
-		msg := v.(*fyne_widgets.PopupMessage)
+		msg := v.(*goapp_fyne.PopupMessage)
 		tex := widget.NewRichTextWithText(msg.Message)
 		tex.Wrapping = fyne.TextWrapWord
 		if msg.IsError {
@@ -87,7 +87,7 @@ func (this *DesignerWindow) build_Designer_Toolbar() fyne.CanvasObject {
 			widget.NewToolbarAction(theme.ContentPasteIcon(), func() {}),
 			widget.NewToolbarSpacer(),
 			widget.NewToolbarAction(theme.HelpIcon(), func() {
-				err := fyne_widgets.OpenURL(DESIGNER_SITE)
+				err := goapp_fyne.OpenURL(DESIGNER_SITE)
 				if err != nil {
 					this.log.Error().Err(err).Msg("Open help url")
 				}
