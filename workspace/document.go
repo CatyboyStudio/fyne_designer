@@ -3,17 +3,27 @@ package workspace
 import (
 	"fmt"
 	"goapp_commons"
+	"noc"
 	"path/filepath"
 	"strings"
 
-	gonanoid "github.com/matoous/go-nanoid/v2"
-	"github.com/pkg/errors"
+	. "cbsutil/valconv"
 )
 
 const DOC_EXT = ".doc.toml"
+const DOC_COMTYPE = "document"
+
+func init() {
+	noc.RegisterGlobalFactory(DOC_COMTYPE, func(comtype string) (noc.Component, error) {
+		return newDocument(), nil
+	})
+}
+
+var _ (noc.Component) = (*Document)(nil)
 
 type Document struct {
-	id          string
+	noc.BaseComponent
+
 	Filepath    string
 	GenFilepath string
 	PackageName string
@@ -22,18 +32,18 @@ type Document struct {
 	title string
 }
 
-func NewDocument() *Document {
-	return &Document{
-		id: gonanoid.Must(),
-	}
+func newDocument() *Document {
+	return &Document{}
 }
 
-func (this *Document) dispose() {
-
+func (this *Document) OnCreate(info *noc.ComponentInfo) {
+	this.BaseComponent.OnCreate(info)
+	info.Flag.Set(noc.FLAG_DONT_DELETE)
+	info.GetObject().MainData = this
 }
 
 func (this *Document) GetId() string {
-	return this.id
+	return this.Info().GetObject().Id()
 }
 
 func (this *Document) GetTitle() string {
@@ -57,20 +67,16 @@ func (this *Document) updateTitle() {
 	}
 }
 
-func (this *Document) ToJson() map[string]any {
+func (this *Document) ToJson() (map[string]any, error) {
 	ret := make(map[string]any)
-	ret["Id"] = this.id
-	ret["Package"] = this.PackageName
-	ret["GenFile"] = this.GenFilepath
-	return ret
+	ret["package"] = this.PackageName
+	ret["gen_file"] = this.GenFilepath
+	return ret, nil
 }
 
 func (this *Document) FromJson(data map[string]any) error {
-	this.id = goapp_commons.GetValue[string](data, "Id", "")
-	if this.id == "" {
-		return errors.New("Document miss [Id]")
-	}
-	this.PackageName = goapp_commons.GetValue[string](data, "Package", "")
-	this.GenFilepath = goapp_commons.GetValue[string](data, "GenFile", "")
+	jd := MapStringAny(data)
+	this.PackageName = jd.Get("package").ToString().Value
+	this.GenFilepath = jd.Get("gen_file").ToString().Value
 	return nil
 }

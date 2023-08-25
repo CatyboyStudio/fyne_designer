@@ -24,23 +24,24 @@ func (this *Workspace) GetDocument(id string) *Document {
 }
 
 func (this *Workspace) OpenDocument(doc *Document) error {
-	if o, ok := this.documents[doc.id]; ok {
+	id := doc.GetId()
+	if o, ok := this.documents[id]; ok {
 		if o == doc {
 			return nil
 		}
-		err := this.CloseDocument(o.id)
+		err := this.CloseDocument(id)
 		if err != nil {
 			return err
 		}
 	}
 
 	// open document
-	this.documents[doc.id] = doc
+	this.documents[id] = doc
 	doc.updateTitle()
 	this.RaiseEvent(EVENT_DOC_OPEN, doc)
 
 	if this.activeDocument == nil {
-		this.ActiveDocument(doc.id, true)
+		this.ActiveDocument(id, true)
 	}
 
 	return nil
@@ -51,7 +52,7 @@ func (this *Workspace) CloseDocument(id string) error {
 	if !ok {
 		return nil
 	}
-	old, ok := this.documents[doc.id]
+	old, ok := this.documents[id]
 	if !ok {
 		return nil
 	}
@@ -60,12 +61,12 @@ func (this *Workspace) CloseDocument(id string) error {
 	}
 
 	if this.activeDocument == doc {
-		this.ActiveDocument(doc.id, false)
+		this.ActiveDocument(id, false)
 	}
 
-	delete(this.documents, doc.id)
-	doc.dispose()
+	delete(this.documents, id)
 	this.RaiseEvent(EVENT_DOC_CLOSE, doc)
+	this.DeleteObject(doc.Info().GetObject())
 	return nil
 }
 
@@ -94,19 +95,23 @@ func (this *Workspace) ActiveDocument(id string, a bool) error {
 }
 
 func (this *Workspace) SaveDocument(id string) error {
+	// TODO: 先保存Document，再保存其他对象
 	doc, ok := this.documents[id]
 	if !ok {
 		return nil
 	}
 	if doc.Filepath == "" {
 		this.NextEvent(EVENT_DOC_SAVEFILE, doc, func(w *Workspace) error {
-			return w.SaveDocument(doc.id)
+			return w.SaveDocument(id)
 		})
 		return nil
 	}
-	data := doc.ToJson()
+	data, err := doc.ToJson()
+	if err != nil {
+		return errors.WithStack(err)
+	}
 	buf := new(bytes.Buffer)
-	err := toml.NewEncoder(buf).Encode(data)
+	err = toml.NewEncoder(buf).Encode(data)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -118,6 +123,7 @@ func (this *Workspace) SaveDocument(id string) error {
 }
 
 func (this *Workspace) LoadDocument(filename string) error {
+	// TODO: 先加载Document，再加载其他对象
 	bs, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return errors.WithStack(err)
@@ -127,7 +133,16 @@ func (this *Workspace) LoadDocument(filename string) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	doc := NewDocument()
+	obj, err := this.LoadObject(data)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	com, err := obj.AddComponent(DOC_COMTYPE)
+	if err != nil {
+		this.DeleteObject(obj)
+		return errors.WithStack(err)
+	}
+	doc := com.(*Document)
 	doc.Filepath = filename
 	err = doc.FromJson(data)
 	if err != nil {
