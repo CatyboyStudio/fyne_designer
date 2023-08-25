@@ -1,5 +1,7 @@
 package workspace
 
+import "noc"
+
 type WSEvent struct {
 	Event string
 	Data  any
@@ -14,7 +16,7 @@ const (
 )
 
 type Workspace struct {
-	r *WorkspaceHost
+	noc.BaseNode
 
 	documents      map[string]*Document
 	activeDocument *Document
@@ -23,12 +25,13 @@ type Workspace struct {
 	listeners map[int]func(WSEvent)
 }
 
-func newWorkspace(r *WorkspaceHost) *Workspace {
-	return &Workspace{
-		r:         r,
+func newWorkspace() *Workspace {
+	o := &Workspace{
 		documents: make(map[string]*Document),
 		listeners: make(map[int]func(WSEvent)),
 	}
+	o.CreateBaseNode(o)
+	return o
 }
 
 func (this *Workspace) RaiseEvent(ev string, data any) {

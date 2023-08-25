@@ -67,7 +67,7 @@ func (this *DesignerWindow) Show() {
 	this.window.SetContent(this.build_Main())
 	goapp_fyne.ShowMaximizeWindow(this.window)
 	this.popupMessage.Start()
-	workspace.Current.AddListener(this.onWorkspaceEvent, func(id int) {
+	workspace.AddWorkspaceListener(this.onWorkspaceEvent, func(id int) {
 		this.lisid = id
 	})
 }

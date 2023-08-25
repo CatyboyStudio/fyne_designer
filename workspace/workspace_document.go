@@ -3,6 +3,7 @@ package workspace
 import (
 	"bytes"
 	"io/ioutil"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
@@ -69,6 +70,7 @@ func (this *Workspace) CloseDocument(id string) error {
 }
 
 func (this *Workspace) ReloadDocument(id string) error {
+	time.Sleep(time.Second * 5)
 	return nil
 }
 

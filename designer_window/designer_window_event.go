@@ -1,7 +1,7 @@
 package designer_window
 
 import (
-	"fmt"
+	"cbsutil/logi"
 	"fyne_designer/workspace"
 )
 
@@ -12,6 +12,6 @@ func (this *DesignerWindow) onWorkspaceEvent(ev workspace.WSEvent) {
 	case workspace.EVENT_DOC_CLOSE:
 		this.toolp.docView.removeDocument(ev.Data.(*workspace.Document))
 	case workspace.EVENT_DOC_ACTIVE:
-		fmt.Println(ev.Event, ev.Data)
+		logi.Debug.Printf("document active: %v", ev.Data)
 	}
 }
