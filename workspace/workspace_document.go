@@ -66,7 +66,7 @@ func (this *Workspace) CloseDocument(id string) error {
 
 	delete(this.documents, id)
 	this.RaiseEvent(EVENT_DOC_CLOSE, doc)
-	this.DeleteObject(doc.Info().GetObject())
+	this.node.DeleteObject(doc.Info().GetObject())
 	return nil
 }
 
@@ -133,13 +133,13 @@ func (this *Workspace) LoadDocument(filename string) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	obj, err := this.LoadObject(data)
+	obj, err := this.node.LoadObject(data)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	com, err := obj.AddComponent(DOC_COMTYPE)
 	if err != nil {
-		this.DeleteObject(obj)
+		this.node.DeleteObject(obj)
 		return errors.WithStack(err)
 	}
 	doc := com.(*Document)

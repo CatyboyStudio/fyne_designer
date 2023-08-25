@@ -17,7 +17,7 @@ var Current *noc.NodeHost
 
 func NewWorkspace() *noc.NodeHost {
 	ws := newWorkspace()
-	host := noc.NewHost(ws)
+	host := noc.NewHost(ws.Node())
 	host.Run()
 	Current = host
 	return host
@@ -29,7 +29,7 @@ func ExecuteNodeTask(f noc.NodeExecutor, wp WorkspaceProgress) bool {
 		return this.Post(f)
 	}
 	ret := make(chan any)
-	b := this.Post(func(w noc.Node) error {
+	b := this.Post(func(w *noc.Node) error {
 		defer func() {
 			close(ret)
 		}()
@@ -54,11 +54,11 @@ func ExecuteNodeTask(f noc.NodeExecutor, wp WorkspaceProgress) bool {
 }
 
 func AddWorkspaceListener(lis func(WSEvent), cb func(int)) bool {
-	return Current.Post(func(n noc.Node) error {
+	return Current.Post(func(n *noc.Node) error {
 		if n == nil {
 			return nil
 		}
-		w := n.(*Workspace)
+		w := n.MainData.(*Workspace)
 		w.lisid += 1
 		w.listeners[w.lisid] = lis
 		if cb != nil {
@@ -69,21 +69,21 @@ func AddWorkspaceListener(lis func(WSEvent), cb func(int)) bool {
 }
 
 func RemoveWorkspaceListener(id int) {
-	Current.Post(func(n noc.Node) error {
+	Current.Post(func(n *noc.Node) error {
 		if n == nil {
 			return nil
 		}
-		w := n.(*Workspace)
+		w := n.MainData.(*Workspace)
 		delete(w.listeners, id)
 		return nil
 	})
 }
 
 func ExecWorkspaceTask(f WorkspaceExecutor, wp WorkspaceProgress) bool {
-	return ExecuteNodeTask(func(n noc.Node) error {
+	return ExecuteNodeTask(func(n *noc.Node) error {
 		var w *Workspace
 		if n != nil {
-			w = n.(*Workspace)
+			w = n.MainData.(*Workspace)
 		}
 		return f(w)
 	}, wp)

@@ -31,10 +31,10 @@ func (this *DesignerWindow) commandToggleInspectorPanel() {
 
 func (this *DesignerWindow) commandNewDocument() {
 	ExecWorkspaceTask(func(w *workspace.Workspace) error {
-		obj := w.NewObject()
+		obj := w.Node().NewObject()
 		com, err := obj.AddComponent(workspace.DOC_COMTYPE)
 		if err != nil {
-			w.DeleteObject(obj)
+			w.Node().DeleteObject(obj)
 			return err
 		}
 		return w.OpenDocument(com.(*workspace.Document))

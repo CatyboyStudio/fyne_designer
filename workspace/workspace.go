@@ -16,7 +16,7 @@ const (
 )
 
 type Workspace struct {
-	noc.BaseNode
+	node *noc.Node
 
 	documents      map[string]*Document
 	activeDocument *Document
@@ -27,11 +27,16 @@ type Workspace struct {
 
 func newWorkspace() *Workspace {
 	o := &Workspace{
+		node:      noc.NewNode(),
 		documents: make(map[string]*Document),
 		listeners: make(map[int]func(WSEvent)),
 	}
-	o.CreateBaseNode(o)
+	o.node.MainData = o
 	return o
+}
+
+func (this *Workspace) Node() *noc.Node {
+	return this.node
 }
 
 func (this *Workspace) RaiseEvent(ev string, data any) {
