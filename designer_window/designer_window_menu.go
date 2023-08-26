@@ -16,6 +16,21 @@ func (dw *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 	w := dw.window
 	M := goapp_commons.GetMessage
 
+	changeDirItem := fyne.NewMenuItem(M("MainMenu.Workspace.ChangeDir"), func() {
+		dw.commandChangeDir()
+	})
+
+	quitItem := fyne.NewMenuItem(M("MainMenu.Workspace.Quit"), func() {
+		a.Quit()
+	})
+	quitItem.IsQuit = true
+
+	wsp := fyne.NewMenu(M("MainMenu.Workspace.Title"),
+		changeDirItem,
+		fyne.NewMenuItemSeparator(),
+		quitItem,
+	)
+
 	newItem := fyne.NewMenuItem(M("MainMenu.File.NewDocument"), func() {
 		dw.commandNewDocument()
 	})
@@ -33,14 +48,8 @@ func (dw *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 	// 	openSettings()
 	// })
 
-	quitItem := fyne.NewMenuItem(M("MainMenu.File.Quit"), func() {
-		a.Quit()
-	})
-	quitItem.IsQuit = true
 	file := fyne.NewMenu(M("MainMenu.File.Title"),
 		newItem,
-		// fyne.NewMenuItemSeparator(), settingsItem,
-		fyne.NewMenuItemSeparator(), quitItem,
 	)
 
 	performToggle := dw.commandToggleView
@@ -80,6 +89,7 @@ func (dw *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 	)
 
 	main := fyne.NewMainMenu(
+		wsp,
 		file,
 		view,
 		help,

@@ -3,6 +3,10 @@ package workspace
 import (
 	"cbsutil/collections"
 	"noc"
+	"os"
+	"path/filepath"
+
+	"fyne.io/fyne/v2"
 )
 
 type WSEvent struct {
@@ -23,6 +27,8 @@ type HandlerForWorkspaceEvent func(WSEvent)
 type Workspace struct {
 	node *noc.Node
 
+	dir string
+
 	documents      map[string]*Document
 	activeDocument *Document
 
@@ -35,34 +41,52 @@ func newWorkspace() *Workspace {
 		documents: make(map[string]*Document),
 	}
 	o.node.MainData = o
+	wd, _ := os.Getwd()
+	o.dir = fyne.CurrentApp().Preferences().StringWithFallback("Workspace_dir", wd)
 	return o
 }
 
-func (this *Workspace) Node() *noc.Node {
-	return this.node
+func (th *Workspace) Node() *noc.Node {
+	return th.node
 }
 
-func (this *Workspace) RaiseEvent(ev string, data any) {
+func (th *Workspace) Dir() string {
+	return th.dir
+}
+
+func (th *Workspace) SetDir(p string) {
+	v, err := filepath.Abs(p)
+	if err != nil {
+		return
+	}
+	if v == th.dir {
+		return
+	}
+	th.dir = v
+	fyne.CurrentApp().Preferences().SetString("Workspace_dir", v)
+}
+
+func (th *Workspace) RaiseEvent(ev string, data any) {
 	e := WSEvent{
 		Event: ev,
 		Data:  data,
 	}
-	for _, lis := range this.listeners.Data {
+	for _, lis := range th.listeners.Data {
 		lis.(HandlerForWorkspaceEvent)(e)
 	}
 }
 
-func (this *Workspace) NextEvent(ev string, data any, next WorkspaceExecutor) {
+func (th *Workspace) NextEvent(ev string, data any, next WorkspaceExecutor) {
 	e := WSEvent{
 		Event: ev,
 		Data:  data,
 		Next:  next,
 	}
-	for _, lis := range this.listeners.Data {
+	for _, lis := range th.listeners.Data {
 		lis.(HandlerForWorkspaceEvent)(e)
 	}
 }
 
-func (this *Workspace) GetActiveDocument() *Document {
-	return this.activeDocument
+func (th *Workspace) GetActiveDocument() *Document {
+	return th.activeDocument
 }

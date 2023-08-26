@@ -1,8 +1,15 @@
 package workspace
 
-import "fyne.io/fyne/v2/widget"
+import (
+	"context"
+	"fyne_widget/inspector"
 
-func (this *Document) CreateInspectorGUI(form *widget.Form, label string) error {
+	"fyne.io/fyne/v2/widget"
+)
+
+var _ (inspector.Editor) = (*Document)(nil)
+
+func (this *Document) CreateInspectorGUI(ctx context.Context, form *widget.Form, label string) error {
 	form.Append("Test", widget.NewEntry())
 	return nil
 }

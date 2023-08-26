@@ -4,10 +4,14 @@ Title = "Fyne设计器"
 Title = "处理中"
 Close = "隐藏"
 
+[MainMenu.Workspace]
+Title = "工作区"
+ChangeDir = "更换目录"
+Quit = "退出"
+
 [MainMenu.File]
 Title = "文件"
 NewDocument = "新建文档"
-Quit = "退出"
 
 [MainMenu.View]
 Title = "视图"
@@ -33,3 +37,7 @@ Title = "树视角"
 
 [Document]
 Untitle = "未命名文档"
+
+[Dialog.ChangeWorkspaceDir]
+Title = "更换工作区目录"
+Label = "目录"
