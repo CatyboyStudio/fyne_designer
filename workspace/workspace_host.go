@@ -53,16 +53,15 @@ func ExecuteNodeTask(f noc.NodeExecutor, wp WorkspaceProgress) bool {
 	return b
 }
 
-func AddWorkspaceListener(lis func(WSEvent), cb func(int)) bool {
+func AddWorkspaceListener(lis HandlerForWorkspaceEvent, cb func(int)) bool {
 	return Current.Post(func(n *noc.Node) error {
 		if n == nil {
 			return nil
 		}
 		w := n.MainData.(*Workspace)
-		w.lisid += 1
-		w.listeners[w.lisid] = lis
+		id := w.listeners.Add(lis)
 		if cb != nil {
-			cb(w.lisid)
+			cb(id)
 		}
 		return nil
 	})
@@ -74,7 +73,7 @@ func RemoveWorkspaceListener(id int) {
 			return nil
 		}
 		w := n.MainData.(*Workspace)
-		delete(w.listeners, id)
+		w.listeners.Remove(id)
 		return nil
 	})
 }

@@ -1,6 +1,9 @@
 package workspace
 
-import "noc"
+import (
+	"cbsutil/collections"
+	"noc"
+)
 
 type WSEvent struct {
 	Event string
@@ -15,21 +18,21 @@ const (
 	EVENT_DOC_SAVEFILE = "doc_savefile" // next
 )
 
+type HandlerForWorkspaceEvent func(WSEvent)
+
 type Workspace struct {
 	node *noc.Node
 
 	documents      map[string]*Document
 	activeDocument *Document
 
-	lisid     int
-	listeners map[int]func(WSEvent)
+	listeners collections.IdSlice
 }
 
 func newWorkspace() *Workspace {
 	o := &Workspace{
 		node:      noc.NewNode(),
 		documents: make(map[string]*Document),
-		listeners: make(map[int]func(WSEvent)),
 	}
 	o.node.MainData = o
 	return o
@@ -44,8 +47,8 @@ func (this *Workspace) RaiseEvent(ev string, data any) {
 		Event: ev,
 		Data:  data,
 	}
-	for _, lis := range this.listeners {
-		lis(e)
+	for _, lis := range this.listeners.Data {
+		lis.(HandlerForWorkspaceEvent)(e)
 	}
 }
 
@@ -55,8 +58,8 @@ func (this *Workspace) NextEvent(ev string, data any, next WorkspaceExecutor) {
 		Data:  data,
 		Next:  next,
 	}
-	for _, lis := range this.listeners {
-		lis(e)
+	for _, lis := range this.listeners.Data {
+		lis.(HandlerForWorkspaceEvent)(e)
 	}
 }
 
