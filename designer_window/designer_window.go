@@ -3,6 +3,7 @@ package designer_window
 import (
 	"fyne_designer/widgets"
 	"fyne_designer/workspace"
+	"fyne_widget/inspector"
 	"goapp_commons"
 	"goapp_fyne"
 
@@ -20,6 +21,8 @@ type DesignerWindow struct {
 	designerContainer *fyne.Container
 	toolbar           *widget.Toolbar
 	split3            *widgets.Split3
+
+	inspector *inspector.Inspector
 
 	toggle          bool
 	toggleLeft      bool

@@ -13,5 +13,8 @@ func (this *DesignerWindow) onWorkspaceEvent(ev workspace.WSEvent) {
 		this.toolp.docView.removeDocument(ev.Data.(*workspace.Document))
 	case workspace.EVENT_DOC_ACTIVE:
 		logi.Debug.Printf("document active: %v", ev.Data)
+		if ev.Data == nil {
+
+		}
 	}
 }

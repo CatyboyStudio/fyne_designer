@@ -2,9 +2,9 @@ package designer_window
 
 import (
 	"fyne_designer/widgets"
+	"fyne_widget/inspector"
 	"goapp_fyne"
 	"image/color"
-	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -79,7 +79,7 @@ func (this *DesignerWindow) build_Designer_Toolbar() fyne.CanvasObject {
 	if this.toolbar == nil {
 		toolbar := widget.NewToolbar(
 			widget.NewToolbarAction(theme.DocumentCreateIcon(), func() {
-				log.Println("New document")
+				this.commandNewDocument()
 			}),
 			widget.NewToolbarSeparator(),
 			widget.NewToolbarAction(theme.ContentCutIcon(), func() {}),
@@ -103,7 +103,10 @@ func (this *DesignerWindow) build_Designer_Content() fyne.CanvasObject {
 		return this.build_Designer_View()
 	} else {
 		if this.split3 == nil {
-			split := widgets.NewSplit3(this.build_Tool_Panel(), this.build_Designer_View(), widget.NewLabel("Right"))
+			split := widgets.NewSplit3(this.build_Tool_Panel(),
+				this.build_Designer_View(),
+				this.build_Inspector_Panel(),
+			)
 			split.OffsetL = 0.25
 			split.OffsetT = 0.75
 			this.split3 = split
@@ -124,4 +127,11 @@ func (this *DesignerWindow) build_Tool_Panel() fyne.CanvasObject {
 
 func (this *DesignerWindow) build_Designer_View() fyne.CanvasObject {
 	return canvas.NewRectangle(color.White)
+}
+
+func (this *DesignerWindow) build_Inspector_Panel() fyne.CanvasObject {
+	if this.inspector == nil {
+		this.inspector = inspector.NewInspector()
+	}
+	return this.inspector
 }
