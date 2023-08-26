@@ -21,36 +21,32 @@ func newToolPanel() *toolPanel {
 	}
 }
 
-func (this *toolPanel) getContent() fyne.CanvasObject {
-	if this.content == nil {
-		this.content = this.build()
+func (tp *toolPanel) build() fyne.CanvasObject {
+	if tp.content == nil {
+		M := goapp_commons.GetMessage
+		tabs := container.NewAppTabs(
+			container.NewTabItem(M("ToolPanel.Workspace.Title"), tp.build_Workspae()),
+			container.NewTabItem(M("ToolPanel.UITree.Title"), widget.NewLabel("World!")),
+		)
+		tabs.SetTabLocation(container.TabLocationBottom)
+		tp.content = tabs
 	}
-	return this.content
+	return tp.content
 }
 
-func (this *toolPanel) build() fyne.CanvasObject {
-	M := goapp_commons.GetMessage
-	tabs := container.NewAppTabs(
-		container.NewTabItem(M("ToolPanel.Workspace.Title"), this.build_Workspae()),
-		container.NewTabItem(M("ToolPanel.UITree.Title"), widget.NewLabel("World!")),
-	)
-	tabs.SetTabLocation(container.TabLocationBottom)
-	return tabs
-}
-
-func (this *toolPanel) build_Workspae() fyne.CanvasObject {
+func (tp *toolPanel) build_Workspae() fyne.CanvasObject {
 	M := goapp_commons.GetMessage
 	ac := goapp_fyne.NewAccordionBox(
-		widget.NewAccordionItem(M("ToolPanel.Workspace.Document.Title"), this.build_Workspace_DocumentView()),
+		widget.NewAccordionItem(M("ToolPanel.Workspace.Document.Title"), tp.build_Workspace_DocumentView()),
 		widget.NewAccordionItem("B", widget.NewLabel("Two")),
 	)
 	ac.Items[0].Open = true
 	return ac
 }
 
-func (this *toolPanel) build_Workspace_DocumentView() fyne.CanvasObject {
+func (tp *toolPanel) build_Workspace_DocumentView() fyne.CanvasObject {
 	view := NewDocumentView()
-	this.docView = view
+	tp.docView = view
 	list := view.Build()
 	return container.NewMax(list)
 }

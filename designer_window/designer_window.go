@@ -6,23 +6,24 @@ import (
 	"fyne_widget/inspector"
 	"goapp_commons"
 	"goapp_fyne"
+	"log/slog"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
-	"github.com/rs/zerolog"
 )
 
 var MainWindow *DesignerWindow
 
 type DesignerWindow struct {
 	window fyne.Window
-	log    zerolog.Logger
+	log    *slog.Logger
 
 	designerContainer *fyne.Container
 	toolbar           *widget.Toolbar
 	split3            *widgets.Split3
 
 	inspector *inspector.Inspector
+	docbid    int
 
 	toggle          bool
 	toggleLeft      bool
@@ -37,7 +38,7 @@ type DesignerWindow struct {
 	popupMessage  *goapp_fyne.PopupMessageManager
 	messageBox    *fyne.Container
 	messageShower fyne.CanvasObject
-	loadErrId     int
+	// loadErrId     int
 
 	lisid int
 }
@@ -59,28 +60,28 @@ func NewDesignerWindow() *DesignerWindow {
 	return o
 }
 
-func (this *DesignerWindow) shutdown() {
+func (dw *DesignerWindow) shutdown() {
 	MainWindow = nil
-	this.window.SetOnClosed(nil)
-	this.popupMessage.Close()
+	dw.window.SetOnClosed(nil)
+	dw.popupMessage.Close()
 }
 
-func (this *DesignerWindow) Show() {
-	this.window.Resize(fyne.NewSize(740, 480))
-	this.window.SetContent(this.build_Main())
-	goapp_fyne.ShowMaximizeWindow(this.window)
-	this.popupMessage.Start()
-	workspace.AddWorkspaceListener(this.onWorkspaceEvent, func(id int) {
-		this.lisid = id
+func (dw *DesignerWindow) Show() {
+	dw.window.Resize(fyne.NewSize(740, 480))
+	dw.window.SetContent(dw.build_Main())
+	goapp_fyne.ShowMaximizeWindow(dw.window)
+	dw.popupMessage.Start()
+	workspace.AddWorkspaceListener(dw.onWorkspaceEvent, func(id int) {
+		dw.lisid = id
 	})
 }
 
-func (this *DesignerWindow) Close() {
-	this.window.Close()
+func (dw *DesignerWindow) Close() {
+	dw.window.Close()
 }
 
 func ShowPopupError(err error) {
-	goapp_commons.DefaultLogger().Warn().Err(err).Stack().Msg("ShowPopupError")
+	slog.Warn("ShowPopupError", "error", err)
 	if MainWindow != nil {
 		MainWindow.popupMessage.AddErrorMessage(err.Error(), 10)
 	}

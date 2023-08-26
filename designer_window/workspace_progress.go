@@ -18,23 +18,23 @@ type wsProgress struct {
 }
 
 // Close implements workspace.WorkspaceProgress.
-func (this *wsProgress) Close() {
-	v := atomic.LoadInt32(&this.count)
+func (wsp *wsProgress) Close() {
+	v := atomic.LoadInt32(&wsp.count)
 	if v > 0 {
-		if atomic.CompareAndSwapInt32(&this.count, v, v-1) {
+		if atomic.CompareAndSwapInt32(&wsp.count, v, v-1) {
 			if v == 1 {
-				this.doClose()
+				wsp.doClose()
 			}
 		}
 	}
 }
 
 // Show implements workspace.WorkspaceProgress.
-func (this *wsProgress) Show() {
-	v := atomic.LoadInt32(&this.count)
-	atomic.CompareAndSwapInt32(&this.count, v, v+1)
+func (wsp *wsProgress) Show() {
+	v := atomic.LoadInt32(&wsp.count)
+	atomic.CompareAndSwapInt32(&wsp.count, v, v+1)
 	if v == 0 {
-		this.doShow()
+		wsp.doShow()
 	}
 }
 
@@ -43,30 +43,30 @@ func (*wsProgress) ShowDelay() time.Duration {
 	return time.Second * 1
 }
 
-func (this *wsProgress) doShow() {
-	if this.d == nil {
+func (wsp *wsProgress) doShow() {
+	if wsp.d == nil {
 		w := MainWindow.window
 		M := goapp_commons.GetMessage
 
-		if this.content == nil {
-			this.content = widget.NewProgressBarInfinite()
+		if wsp.content == nil {
+			wsp.content = widget.NewProgressBarInfinite()
 		}
-		d := dialog.NewCustom(M("MainWindow.Progress.Title"), M("MainWindow.Progress.Close"), this.content, w)
+		d := dialog.NewCustom(M("MainWindow.Progress.Title"), M("MainWindow.Progress.Close"), wsp.content, w)
 		d.Resize(fyne.NewSize(200, 60))
 		d.SetOnClosed(func() {
-			this.content.Stop()
-			this.d = nil
+			wsp.content.Stop()
+			wsp.d = nil
 		})
 		d.Show()
-		this.d = d
+		wsp.d = d
 	}
-	this.content.Start()
+	wsp.content.Start()
 }
 
-func (this *wsProgress) doClose() {
-	if this.d != nil {
-		this.d.Hide()
-		this.content.Stop()
+func (wsp *wsProgress) doClose() {
+	if wsp.d != nil {
+		wsp.d.Hide()
+		wsp.content.Stop()
 	}
 }
 

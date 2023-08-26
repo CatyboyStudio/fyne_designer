@@ -11,13 +11,13 @@ import (
 const DESIGNER_SITE = "https://catyboy.itch.io/"
 const DESIGNER_GITHUB = "https://github.com/CatyboyStudio/FyneDesigner"
 
-func (this *DesignerWindow) build_MainMenu() *fyne.MainMenu {
+func (dw *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 	a := fyne.CurrentApp()
-	w := this.window
+	w := dw.window
 	M := goapp_commons.GetMessage
 
 	newItem := fyne.NewMenuItem(M("MainMenu.File.NewDocument"), func() {
-		this.commandNewDocument()
+		dw.commandNewDocument()
 	})
 
 	// openSettings := func() {
@@ -43,7 +43,7 @@ func (this *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 		fyne.NewMenuItemSeparator(), quitItem,
 	)
 
-	performToggle := this.commandToggleView
+	performToggle := dw.commandToggleView
 	toggleItem := fyne.NewMenuItem(M("MainMenu.View.Toggle"), performToggle)
 	toggleItem.Shortcut = &desktop.CustomShortcut{
 		KeyName:  fyne.KeyF5,
@@ -52,16 +52,16 @@ func (this *DesignerWindow) build_MainMenu() *fyne.MainMenu {
 	w.Canvas().AddShortcut(toggleItem.Shortcut, func(shortcut fyne.Shortcut) {
 		performToggle()
 	})
-	this.toggleLeftItem = fyne.NewMenuItem(M("MainMenu.View.ToggleLeft"), this.commandToggleToolPanel)
-	this.toggleLeftItem.Checked = this.toggleLeft
-	this.toggleRightItem = fyne.NewMenuItem(M("MainMenu.View.ToggleRight"), this.commandToggleInspectorPanel)
-	this.toggleRightItem.Checked = this.toggleRight
+	dw.toggleLeftItem = fyne.NewMenuItem(M("MainMenu.View.ToggleLeft"), dw.commandToggleToolPanel)
+	dw.toggleLeftItem.Checked = dw.toggleLeft
+	dw.toggleRightItem = fyne.NewMenuItem(M("MainMenu.View.ToggleRight"), dw.commandToggleInspectorPanel)
+	dw.toggleRightItem.Checked = dw.toggleRight
 
 	view := fyne.NewMenu(M("MainMenu.View.Title"),
-		toggleItem, this.toggleLeftItem, this.toggleRightItem,
+		toggleItem, dw.toggleLeftItem, dw.toggleRightItem,
 	)
-	this.toggleItem = toggleItem
-	this.toggleRefresh = view.Refresh
+	dw.toggleItem = toggleItem
+	dw.toggleRefresh = view.Refresh
 
 	help := fyne.NewMenu(M("MainMenu.Help.Title"),
 		fyne.NewMenuItem(M("MainMenu.Help.Designer.Site"), func() {

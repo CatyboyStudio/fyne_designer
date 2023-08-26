@@ -14,17 +14,17 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func (this *DesignerWindow) build_Main() fyne.CanvasObject {
+func (dw *DesignerWindow) build_Main() fyne.CanvasObject {
 	co := container.NewMax(
-		this.build_Designer(),
-		this.build_PopupMessageView(),
+		dw.build_Designer(),
+		dw.build_PopupMessageView(),
 	)
 	return co
 }
 
-func (this *DesignerWindow) on_PopupMessageData() {
-	list, _ := this.popupMessage.Data.Get()
-	this.messageBox.RemoveAll()
+func (dw *DesignerWindow) on_PopupMessageData() {
+	list, _ := dw.popupMessage.Data.Get()
+	dw.messageBox.RemoveAll()
 	for _, v := range list {
 		msg := v.(*goapp_fyne.PopupMessage)
 		tex := widget.NewRichTextWithText(msg.Message)
@@ -33,53 +33,53 @@ func (this *DesignerWindow) on_PopupMessageData() {
 			seg := tex.Segments[0].(*widget.TextSegment)
 			seg.Style.ColorName = theme.ColorNameError
 		}
-		this.messageBox.Add(tex)
+		dw.messageBox.Add(tex)
 	}
-	this.messageBox.Refresh()
+	dw.messageBox.Refresh()
 	if len(list) > 0 {
-		this.messageShower.Show()
+		dw.messageShower.Show()
 	} else {
-		this.messageShower.Hide()
+		dw.messageShower.Hide()
 	}
 }
 
-func (this *DesignerWindow) build_PopupMessageView() fyne.CanvasObject {
-	this.messageBox = container.NewVBox()
-	mbar := container.NewPadded(this.messageBox)
+func (dw *DesignerWindow) build_PopupMessageView() fyne.CanvasObject {
+	dw.messageBox = container.NewVBox()
+	mbar := container.NewPadded(dw.messageBox)
 	g := container.NewMax(canvas.NewRectangle(color.RGBA{128, 128, 128, 64}), mbar)
 	s := container.NewVScroll(g)
 	m := NewMessageBox(fyne.NewPos(-1, -1), s)
-	this.messageShower = s
-	this.messageShower.Hide()
+	dw.messageShower = s
+	dw.messageShower.Hide()
 
-	this.popupMessage.Data.AddListener(binding.NewDataListener(this.on_PopupMessageData))
+	dw.popupMessage.Data.AddListener(binding.NewDataListener(dw.on_PopupMessageData))
 	return m
 }
 
-func (this *DesignerWindow) build_Designer() fyne.CanvasObject {
-	if this.designerContainer == nil {
-		this.designerContainer = container.NewMax()
+func (dw *DesignerWindow) build_Designer() fyne.CanvasObject {
+	if dw.designerContainer == nil {
+		dw.designerContainer = container.NewMax()
 	}
-	this.designerContainer.RemoveAll()
-	if this.toggle {
-		content := this.build_Designer_Content()
-		this.designerContainer.Add(content)
+	dw.designerContainer.RemoveAll()
+	if dw.toggle {
+		content := dw.build_Designer_Content()
+		dw.designerContainer.Add(content)
 	} else {
 		content := container.NewBorder(
-			this.build_Designer_Toolbar(),
+			dw.build_Designer_Toolbar(),
 			nil, nil, nil,
-			this.build_Designer_Content(),
+			dw.build_Designer_Content(),
 		)
-		this.designerContainer.Add(content)
+		dw.designerContainer.Add(content)
 	}
-	return this.designerContainer
+	return dw.designerContainer
 }
 
-func (this *DesignerWindow) build_Designer_Toolbar() fyne.CanvasObject {
-	if this.toolbar == nil {
+func (dw *DesignerWindow) build_Designer_Toolbar() fyne.CanvasObject {
+	if dw.toolbar == nil {
 		toolbar := widget.NewToolbar(
 			widget.NewToolbarAction(theme.DocumentCreateIcon(), func() {
-				this.commandNewDocument()
+				dw.commandNewDocument()
 			}),
 			widget.NewToolbarSeparator(),
 			widget.NewToolbarAction(theme.ContentCutIcon(), func() {}),
@@ -89,49 +89,49 @@ func (this *DesignerWindow) build_Designer_Toolbar() fyne.CanvasObject {
 			widget.NewToolbarAction(theme.HelpIcon(), func() {
 				err := goapp_fyne.OpenURL(DESIGNER_SITE)
 				if err != nil {
-					this.log.Error().Err(err).Msg("Open help url")
+					dw.log.Error("Open help url", "error", err)
 				}
 			}),
 		)
-		this.toolbar = toolbar
+		dw.toolbar = toolbar
 	}
-	return this.toolbar
+	return dw.toolbar
 }
 
-func (this *DesignerWindow) build_Designer_Content() fyne.CanvasObject {
-	if this.toggle {
-		return this.build_Designer_View()
+func (dw *DesignerWindow) build_Designer_Content() fyne.CanvasObject {
+	if dw.toggle {
+		return dw.build_Designer_View()
 	} else {
-		if this.split3 == nil {
-			split := widgets.NewSplit3(this.build_Tool_Panel(),
-				this.build_Designer_View(),
-				this.build_Inspector_Panel(),
+		if dw.split3 == nil {
+			split := widgets.NewSplit3(dw.build_Tool_Panel(),
+				dw.build_Designer_View(),
+				dw.build_Inspector_Panel(),
 			)
 			split.OffsetL = 0.25
 			split.OffsetT = 0.75
-			this.split3 = split
+			dw.split3 = split
 		}
-		content := this.split3
-		this.split3.SetVisible(false, this.toggleLeft)
-		this.split3.SetVisible(true, this.toggleRight)
+		content := dw.split3
+		dw.split3.SetVisible(false, dw.toggleLeft)
+		dw.split3.SetVisible(true, dw.toggleRight)
 		return content
 	}
 }
 
-func (this *DesignerWindow) build_Tool_Panel() fyne.CanvasObject {
-	if this.toolp == nil {
-		this.toolp = newToolPanel()
+func (dw *DesignerWindow) build_Tool_Panel() fyne.CanvasObject {
+	if dw.toolp == nil {
+		dw.toolp = newToolPanel()
 	}
-	return this.toolp.build()
+	return dw.toolp.build()
 }
 
-func (this *DesignerWindow) build_Designer_View() fyne.CanvasObject {
+func (dw *DesignerWindow) build_Designer_View() fyne.CanvasObject {
 	return canvas.NewRectangle(color.White)
 }
 
-func (this *DesignerWindow) build_Inspector_Panel() fyne.CanvasObject {
-	if this.inspector == nil {
-		this.inspector = inspector.NewInspector()
+func (dw *DesignerWindow) build_Inspector_Panel() fyne.CanvasObject {
+	if dw.inspector == nil {
+		dw.inspector = inspector.NewInspector()
 	}
-	return this.inspector
+	return dw.inspector
 }

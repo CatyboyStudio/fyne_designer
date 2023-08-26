@@ -45,49 +45,49 @@ func NewDocumentViewItem(self *DocumentView) *DocumentViewItem {
 }
 
 // CreateRenderer implements fyne.Widget.
-func (this *DocumentViewItem) CreateRenderer() fyne.WidgetRenderer {
-	this.label = widget.NewLabel("")
-	this.build()
+func (th *DocumentViewItem) CreateRenderer() fyne.WidgetRenderer {
+	th.label = widget.NewLabel("")
+	th.build()
 	buttons := container.NewHBox(
 		canvas.NewRectangle(theme.ForegroundColor()),
 		widget.NewButtonWithIcon("", theme.DocumentSaveIcon(), func() {
-			key := this.GetText()
-			this.self.saveBy(key)
+			key := th.GetText()
+			th.self.saveBy(key)
 		}),
 		widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), func() {
-			key := this.GetText()
-			this.self.reloadBy(key)
+			key := th.GetText()
+			th.self.reloadBy(key)
 		}),
 		widget.NewButtonWithIcon("", theme.CancelIcon(), func() {
-			key := this.GetText()
-			this.self.deleteBy(key)
+			key := th.GetText()
+			th.self.deleteBy(key)
 		}),
 	)
-	co := container.NewBorder(nil, nil, nil, buttons, this.label)
+	co := container.NewBorder(nil, nil, nil, buttons, th.label)
 	return widget.NewSimpleRenderer(co)
 }
 
-func (this *DocumentViewItem) GetText() string {
+func (th *DocumentViewItem) GetText() string {
 	text := ""
-	if this.Data != nil {
-		text, _ = this.Data.Get()
+	if th.Data != nil {
+		text, _ = th.Data.Get()
 	}
 	return text
 }
 
-func (this *DocumentViewItem) UpdateData(data binding.String) {
-	this.Data = data
-	this.build()
-	this.label.Refresh()
+func (th *DocumentViewItem) UpdateData(data binding.String) {
+	th.Data = data
+	th.build()
+	th.label.Refresh()
 }
 
-func (this *DocumentViewItem) build() {
-	if this.label != nil {
-		s := this.GetText()
+func (th *DocumentViewItem) build() {
+	if th.label != nil {
+		s := th.GetText()
 		if s != "" {
 			_, s = DocumentViewItem_SplitData(s)
 		}
-		this.label.Text = s
+		th.label.Text = s
 	}
 }
 
@@ -102,11 +102,11 @@ func NewDocumentView() *DocumentView {
 	}
 }
 
-func (this *DocumentView) Build() fyne.CanvasObject {
+func (th *DocumentView) Build() fyne.CanvasObject {
 	list := widget.NewListWithData(
-		this.docs,
+		th.docs,
 		func() fyne.CanvasObject {
-			return NewDocumentViewItem(this)
+			return NewDocumentViewItem(th)
 		},
 		func(di binding.DataItem, co fyne.CanvasObject) {
 			v := di.(binding.String)
@@ -114,9 +114,9 @@ func (this *DocumentView) Build() fyne.CanvasObject {
 			o.UpdateData(v)
 		},
 	)
-	this.docList = list
+	th.docList = list
 	list.OnSelected = func(id widget.ListItemID) {
-		s, _ := this.docs.GetValue(id)
+		s, _ := th.docs.GetValue(id)
 		docid, _ := DocumentViewItem_SplitData(s)
 		ExecWorkspaceTask(func(w *workspace.Workspace) error {
 			return w.ActiveDocument(docid, true)
@@ -125,38 +125,38 @@ func (this *DocumentView) Build() fyne.CanvasObject {
 	return list
 }
 
-func (this *DocumentView) addDocument(doc *workspace.Document) {
+func (th *DocumentView) addDocument(doc *workspace.Document) {
 	ss := DocumentViewItem_MakeData(doc.GetId(), doc.GetTitle())
 	if ss != "" {
-		this.docs.Append(ss)
+		th.docs.Append(ss)
 	}
 }
 
-func (this *DocumentView) removeDocument(doc *workspace.Document) {
+func (th *DocumentView) removeDocument(doc *workspace.Document) {
 	ss := DocumentViewItem_MakeData(doc.GetId(), doc.GetTitle())
 	if ss != "" {
-		slist, _ := this.docs.Get()
+		slist, _ := th.docs.Get()
 		nlist := arrutil.StringsRemove(slist, ss)
-		this.docs.Set(nlist)
-		this.docList.Refresh()
+		th.docs.Set(nlist)
+		th.docList.Refresh()
 	}
 }
 
-func (this *DocumentView) deleteBy(s string) {
+func (th *DocumentView) deleteBy(s string) {
 	docid, _ := DocumentViewItem_SplitData(s)
 	ExecWorkspaceTask(func(w *workspace.Workspace) error {
 		return w.CloseDocument(docid)
 	})
 }
 
-func (this *DocumentView) saveBy(s string) {
+func (th *DocumentView) saveBy(s string) {
 	docid, _ := DocumentViewItem_SplitData(s)
 	ExecWorkspaceTask(func(w *workspace.Workspace) error {
 		return w.SaveDocument(docid)
 	})
 }
 
-func (this *DocumentView) reloadBy(s string) {
+func (th *DocumentView) reloadBy(s string) {
 	docid, _ := DocumentViewItem_SplitData(s)
 	ExecWorkspaceTask(func(w *workspace.Workspace) error {
 		return w.ReloadDocument(docid)
