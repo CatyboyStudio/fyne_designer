@@ -39,11 +39,11 @@ func (dw *DesignerWindow) commandToggleInspectorPanel() {
 }
 
 func (dw *DesignerWindow) commandChangeDir() {
-	ExecWorkspaceTask(func(w *workspace.Workspace) error {
+	workspace.PostWorkspaceTask(func(w *workspace.Workspace) (any, error) {
 		dir := w.Dir()
 		go dw.doChangeDir(dir)
-		return nil
-	})
+		return nil, nil
+	}, nil)
 }
 
 func (dw *DesignerWindow) doChangeDir(dir string) {
@@ -73,10 +73,10 @@ func (dw *DesignerWindow) doChangeDir(dir string) {
 		[]*widget.FormItem{item1}, func(v bool) {
 			if v {
 				s := strings.TrimSpace(input.Text)
-				ExecWorkspaceTask(func(w *workspace.Workspace) error {
+				workspace.PostWorkspaceTask(func(w *workspace.Workspace) (any, error) {
 					w.SetDir(s)
-					return nil
-				})
+					return nil, nil
+				}, nil)
 			}
 		}, dw.window,
 	)
@@ -85,13 +85,13 @@ func (dw *DesignerWindow) doChangeDir(dir string) {
 }
 
 func (dw *DesignerWindow) commandNewDocument() {
-	ExecWorkspaceTask(func(w *workspace.Workspace) error {
+	InvokeWorkspaceTask(func(w *workspace.Workspace) (any, error) {
 		obj := w.Node().NewObject()
 		com, err := obj.AddComponent(workspace.DOC_COMTYPE)
 		if err != nil {
 			w.Node().DeleteObject(obj)
-			return err
+			return nil, err
 		}
-		return w.OpenDocument(com.(*workspace.Document))
+		return nil, w.OpenDocument(com.(*workspace.Document))
 	})
 }

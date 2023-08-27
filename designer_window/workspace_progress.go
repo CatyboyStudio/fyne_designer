@@ -72,6 +72,6 @@ func (wsp *wsProgress) doClose() {
 
 var inswsProgress *wsProgress = &wsProgress{}
 
-func ExecWorkspaceTask(f workspace.WorkspaceExecutor) bool {
-	return workspace.ExecWorkspaceTask(f, inswsProgress)
+func InvokeWorkspaceTask(f workspace.WorkspaceExecutor) bool {
+	return workspace.PostWorkspaceTask(f, inswsProgress)
 }

@@ -118,8 +118,8 @@ func (th *DocumentView) Build() fyne.CanvasObject {
 	list.OnSelected = func(id widget.ListItemID) {
 		s, _ := th.docs.GetValue(id)
 		docid, _ := DocumentViewItem_SplitData(s)
-		ExecWorkspaceTask(func(w *workspace.Workspace) error {
-			return w.ActiveDocument(docid, true)
+		InvokeWorkspaceTask(func(w *workspace.Workspace) (any, error) {
+			return nil, w.ActiveDocument(docid, true)
 		})
 	}
 	return list
@@ -144,21 +144,21 @@ func (th *DocumentView) removeDocument(doc *workspace.Document) {
 
 func (th *DocumentView) deleteBy(s string) {
 	docid, _ := DocumentViewItem_SplitData(s)
-	ExecWorkspaceTask(func(w *workspace.Workspace) error {
-		return w.CloseDocument(docid)
+	InvokeWorkspaceTask(func(w *workspace.Workspace) (any, error) {
+		return nil, w.CloseDocument(docid)
 	})
 }
 
 func (th *DocumentView) saveBy(s string) {
 	docid, _ := DocumentViewItem_SplitData(s)
-	ExecWorkspaceTask(func(w *workspace.Workspace) error {
-		return w.SaveDocument(docid)
+	InvokeWorkspaceTask(func(w *workspace.Workspace) (any, error) {
+		return nil, w.SaveDocument(docid)
 	})
 }
 
 func (th *DocumentView) reloadBy(s string) {
 	docid, _ := DocumentViewItem_SplitData(s)
-	ExecWorkspaceTask(func(w *workspace.Workspace) error {
-		return w.ReloadDocument(docid)
+	InvokeWorkspaceTask(func(w *workspace.Workspace) (any, error) {
+		return nil, w.ReloadDocument(docid)
 	})
 }

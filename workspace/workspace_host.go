@@ -11,7 +11,7 @@ type WorkspaceProgress interface {
 	Close()
 }
 
-type WorkspaceExecutor func(w *Workspace) error
+type WorkspaceExecutor func(w *Workspace) (any, error)
 
 var Current *noc.NodeHost
 
@@ -23,13 +23,13 @@ func NewWorkspace() *noc.NodeHost {
 	return host
 }
 
-func ExecuteNodeTask(f noc.NodeExecutor, wp WorkspaceProgress) bool {
+func PostNodeTask(f noc.NodeExecutor, wp WorkspaceProgress) bool {
 	this := Current
 	if wp == nil {
 		return this.Post(f)
 	}
-	ret := make(chan any)
-	b := this.Post(func(w *noc.Node) error {
+	ret := make(chan int)
+	b := this.Post(func(w *noc.Node) (any, error) {
 		defer func() {
 			close(ret)
 		}()
@@ -54,36 +54,46 @@ func ExecuteNodeTask(f noc.NodeExecutor, wp WorkspaceProgress) bool {
 }
 
 func AddWorkspaceListener(lis HandlerForWorkspaceEvent, cb func(int)) bool {
-	return Current.Post(func(n *noc.Node) error {
+	return Current.Post(func(n *noc.Node) (any, error) {
 		if n == nil {
-			return nil
+			return nil, nil
 		}
 		w := n.MainData.(*Workspace)
 		id := w.listeners.Add(lis)
 		if cb != nil {
 			cb(id)
 		}
-		return nil
+		return nil, nil
 	})
 }
 
 func RemoveWorkspaceListener(id int) {
-	Current.Post(func(n *noc.Node) error {
+	Current.Post(func(n *noc.Node) (any, error) {
 		if n == nil {
-			return nil
+			return nil, nil
 		}
 		w := n.MainData.(*Workspace)
 		w.listeners.Remove(id)
-		return nil
+		return nil, nil
 	})
 }
 
-func ExecWorkspaceTask(f WorkspaceExecutor, wp WorkspaceProgress) bool {
-	return ExecuteNodeTask(func(n *noc.Node) error {
+func PostWorkspaceTask(f WorkspaceExecutor, wp WorkspaceProgress) bool {
+	return PostNodeTask(func(n *noc.Node) (any, error) {
 		var w *Workspace
 		if n != nil {
 			w = n.MainData.(*Workspace)
 		}
 		return f(w)
 	}, wp)
+}
+
+func ExecuteWorkspaceTask(f WorkspaceExecutor) (any, error) {
+	return Current.Execute(func(n *noc.Node) (any, error) {
+		var w *Workspace
+		if n != nil {
+			w = n.MainData.(*Workspace)
+		}
+		return f(w)
+	})
 }

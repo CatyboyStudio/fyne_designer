@@ -2,16 +2,16 @@ package workspace
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 )
 
-func (this *Workspace) SelectDocument(f func(doc *Document) bool) []*Document {
+func (th *Workspace) SelectDocument(f func(doc *Document) bool) []*Document {
 	var ret []*Document
-	for _, doc := range this.documents {
+	for _, doc := range th.documents {
 		if f == nil || f(doc) {
 			ret = append(ret, doc)
 		}
@@ -19,40 +19,40 @@ func (this *Workspace) SelectDocument(f func(doc *Document) bool) []*Document {
 	return ret
 }
 
-func (this *Workspace) GetDocument(id string) *Document {
-	return this.documents[id]
+func (th *Workspace) GetDocument(id string) *Document {
+	return th.documents[id]
 }
 
-func (this *Workspace) OpenDocument(doc *Document) error {
+func (th *Workspace) OpenDocument(doc *Document) error {
 	id := doc.GetId()
-	if o, ok := this.documents[id]; ok {
+	if o, ok := th.documents[id]; ok {
 		if o == doc {
 			return nil
 		}
-		err := this.CloseDocument(id)
+		err := th.CloseDocument(id)
 		if err != nil {
 			return err
 		}
 	}
 
 	// open document
-	this.documents[id] = doc
+	th.documents[id] = doc
 	doc.updateTitle()
-	this.RaiseEvent(EVENT_DOC_OPEN, doc)
+	th.RaiseEvent(EVENT_DOC_OPEN, doc)
 
-	if this.activeDocument == nil {
-		this.ActiveDocument(id, true)
+	if th.activeDocument == nil {
+		th.ActiveDocument(id, true)
 	}
 
 	return nil
 }
 
-func (this *Workspace) CloseDocument(id string) error {
-	doc, ok := this.documents[id]
+func (th *Workspace) CloseDocument(id string) error {
+	doc, ok := th.documents[id]
 	if !ok {
 		return nil
 	}
-	old, ok := this.documents[id]
+	old, ok := th.documents[id]
 	if !ok {
 		return nil
 	}
@@ -60,49 +60,49 @@ func (this *Workspace) CloseDocument(id string) error {
 		return nil
 	}
 
-	if this.activeDocument == doc {
-		this.ActiveDocument(id, false)
+	if th.activeDocument == doc {
+		th.ActiveDocument(id, false)
 	}
 
-	delete(this.documents, id)
-	this.RaiseEvent(EVENT_DOC_CLOSE, doc)
-	this.node.DeleteObject(doc.Info().GetObject())
+	delete(th.documents, id)
+	th.RaiseEvent(EVENT_DOC_CLOSE, doc)
+	th.node.DeleteObject(doc.Info().GetObject())
 	return nil
 }
 
-func (this *Workspace) ReloadDocument(id string) error {
+func (th *Workspace) ReloadDocument(id string) error {
 	time.Sleep(time.Second * 5)
 	return nil
 }
 
-func (this *Workspace) ActiveDocument(id string, a bool) error {
-	doc, ok := this.documents[id]
+func (th *Workspace) ActiveDocument(id string, a bool) error {
+	doc, ok := th.documents[id]
 	if !ok {
 		return nil
 	}
 	if a {
-		if this.activeDocument != doc {
-			this.activeDocument = doc
-			this.RaiseEvent(EVENT_DOC_ACTIVE, doc)
+		if th.activeDocument != doc {
+			th.activeDocument = doc
+			th.RaiseEvent(EVENT_DOC_ACTIVE, doc)
 		}
 	} else {
-		if this.activeDocument == doc {
-			this.activeDocument = nil
-			this.RaiseEvent(EVENT_DOC_ACTIVE, nil)
+		if th.activeDocument == doc {
+			th.activeDocument = nil
+			th.RaiseEvent(EVENT_DOC_ACTIVE, nil)
 		}
 	}
 	return nil
 }
 
-func (this *Workspace) SaveDocument(id string) error {
+func (th *Workspace) SaveDocument(id string) error {
 	// TODO: 先保存Document，再保存其他对象
-	doc, ok := this.documents[id]
+	doc, ok := th.documents[id]
 	if !ok {
 		return nil
 	}
 	if doc.Filepath == "" {
-		this.NextEvent(EVENT_DOC_SAVEFILE, doc, func(w *Workspace) error {
-			return w.SaveDocument(id)
+		th.NextEvent(EVENT_DOC_SAVEFILE, doc, func(w *Workspace) (any, error) {
+			return nil, w.SaveDocument(id)
 		})
 		return nil
 	}
@@ -115,16 +115,16 @@ func (this *Workspace) SaveDocument(id string) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	err = ioutil.WriteFile(doc.Filepath, buf.Bytes(), 0644)
+	err = os.WriteFile(doc.Filepath, buf.Bytes(), 0644)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	return nil
 }
 
-func (this *Workspace) LoadDocument(filename string) error {
+func (th *Workspace) LoadDocument(filename string) error {
 	// TODO: 先加载Document，再加载其他对象
-	bs, err := ioutil.ReadFile(filename)
+	bs, err := os.ReadFile(filename)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -133,13 +133,13 @@ func (this *Workspace) LoadDocument(filename string) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	obj, err := this.node.LoadObject(data)
+	obj, err := th.node.LoadObject(data)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	com, err := obj.AddComponent(DOC_COMTYPE)
 	if err != nil {
-		this.node.DeleteObject(obj)
+		th.node.DeleteObject(obj)
 		return errors.WithStack(err)
 	}
 	doc := com.(*Document)
@@ -148,5 +148,5 @@ func (this *Workspace) LoadDocument(filename string) error {
 	if err != nil {
 		return err
 	}
-	return this.OpenDocument(doc)
+	return th.OpenDocument(doc)
 }

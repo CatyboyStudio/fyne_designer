@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	. "cbsutil/valconv"
+	V "cbsutil/valconv"
 )
 
 const DOC_EXT = ".doc.toml"
@@ -36,47 +36,45 @@ func newDocument() *Document {
 	return &Document{}
 }
 
-func (this *Document) OnCreate(info *noc.ComponentInfo) {
-	this.BaseComponent.OnCreate(info)
+func (th *Document) OnCreate(info *noc.ComponentInfo) {
+	th.BaseComponent.OnCreate(info)
 	info.Flag.Set(noc.FLAG_DONT_DELETE)
-	info.GetObject().MainData = this
+	info.GetObject().MainData = th
 }
 
-func (this *Document) GetId() string {
-	return this.Info().GetObject().Id()
+func (th *Document) GetId() string {
+	return th.Info().GetObject().Id()
 }
 
-func (this *Document) GetTitle() string {
-	if this.title == "" {
+func (th *Document) GetTitle() string {
+	if th.title == "" {
 		t := goapp_commons.GetMessage("Document.Untitle")
-		if this.PackageName != "" {
-			return fmt.Sprintf("%s(%s)", t, this.PackageName)
+		if th.PackageName != "" {
+			return fmt.Sprintf("%s(%s)", t, th.PackageName)
 		}
 		return t
 	}
-	return this.title
+	return th.title
 }
 
-func (this *Document) updateTitle() {
-	if this.Filepath != "" {
-		n := filepath.Base(this.Filepath)
-		if strings.HasSuffix(n, DOC_EXT) {
-			n = n[:len(n)-len(DOC_EXT)]
-		}
-		this.title = n
+func (th *Document) updateTitle() {
+	if th.Filepath != "" {
+		n := filepath.Base(th.Filepath)
+		n = strings.TrimSuffix(n, DOC_EXT)
+		th.title = n
 	}
 }
 
-func (this *Document) ToJson() (map[string]any, error) {
+func (th *Document) ToJson() (map[string]any, error) {
 	ret := make(map[string]any)
-	ret["package"] = this.PackageName
-	ret["gen_file"] = this.GenFilepath
+	ret["package"] = th.PackageName
+	ret["gen_file"] = th.GenFilepath
 	return ret, nil
 }
 
-func (this *Document) FromJson(data map[string]any) error {
-	jd := MapStringAny(data)
-	this.PackageName = jd.Get("package").ToString().Value
-	this.GenFilepath = jd.Get("gen_file").ToString().Value
+func (th *Document) FromJson(data map[string]any) error {
+	jd := V.MapStringAny(data)
+	th.PackageName = jd.Get("package").ToString().Value
+	th.GenFilepath = jd.Get("gen_file").ToString().Value
 	return nil
 }
