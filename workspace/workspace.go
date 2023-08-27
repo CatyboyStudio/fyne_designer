@@ -19,6 +19,7 @@ const (
 	EVENT_DOC_OPEN     = "doc_open"
 	EVENT_DOC_CLOSE    = "doc_close"
 	EVENT_DOC_ACTIVE   = "doc_active"
+	EVENT_DOC_UPDATE   = "doc_update"
 	EVENT_DOC_SAVEFILE = "doc_savefile" // next
 )
 
@@ -32,7 +33,7 @@ type Workspace struct {
 	documents      map[string]*Document
 	activeDocument *Document
 
-	listeners collections.IdSlice
+	listeners collections.IdSlice[HandlerForWorkspaceEvent]
 }
 
 func newWorkspace() *Workspace {
@@ -72,7 +73,7 @@ func (th *Workspace) RaiseEvent(ev string, data any) {
 		Data:  data,
 	}
 	for _, lis := range th.listeners.Data {
-		lis.(HandlerForWorkspaceEvent)(e)
+		lis(e)
 	}
 }
 
@@ -83,7 +84,7 @@ func (th *Workspace) NextEvent(ev string, data any, next WorkspaceExecutor) {
 		Next:  next,
 	}
 	for _, lis := range th.listeners.Data {
-		lis.(HandlerForWorkspaceEvent)(e)
+		lis(e)
 	}
 }
 
