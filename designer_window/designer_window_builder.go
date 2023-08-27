@@ -1,10 +1,13 @@
 package designer_window
 
 import (
+	"cbsutil/executor"
 	"fyne_designer/widgets"
+	"fyne_designer/workspace"
 	"fyne_widget/inspector"
 	"goapp_fyne"
 	"image/color"
+	"noc"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -132,6 +135,7 @@ func (dw *DesignerWindow) build_Designer_View() fyne.CanvasObject {
 func (dw *DesignerWindow) build_Inspector_Panel() fyne.CanvasObject {
 	if dw.inspector == nil {
 		dw.inspector = inspector.NewInspector()
+		dw.inspector.Executor = executor.NewProxyExecutor[any, any, *noc.Node, any](workspace.Executor, nil, nil)
 	}
 	return dw.inspector
 }

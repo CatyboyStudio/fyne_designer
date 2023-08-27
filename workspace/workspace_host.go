@@ -1,6 +1,7 @@
 package workspace
 
 import (
+	"cbsutil/executor"
 	"noc"
 	"time"
 )
@@ -14,10 +15,14 @@ type WorkspaceProgress interface {
 type WorkspaceExecutor func(w *Workspace) (any, error)
 
 var Current *noc.NodeHost
+var Executor executor.Executor[*noc.Node, any]
 
 func NewWorkspace() *noc.NodeHost {
+	if Executor == nil {
+		Executor = executor.NewSingleQueue[*noc.Node, any]()
+	}
 	ws := newWorkspace()
-	host := noc.NewHost(ws.Node())
+	host := noc.NewHost(ws.Node()).WithExecutor(Executor)
 	host.Run()
 	Current = host
 	return host
