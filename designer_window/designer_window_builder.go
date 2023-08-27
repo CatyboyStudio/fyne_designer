@@ -134,7 +134,7 @@ func (dw *DesignerWindow) build_Designer_View() fyne.CanvasObject {
 
 func (dw *DesignerWindow) build_Inspector_Panel() fyne.CanvasObject {
 	if dw.inspector == nil {
-		dw.inspector = inspector.NewInspector()
+		dw.inspector = inspector.NewInspector(dw.window)
 		dw.inspector.Executor = executor.NewProxyExecutor[any, any, *noc.Node, any](workspace.Executor, nil, nil)
 	}
 	return dw.inspector

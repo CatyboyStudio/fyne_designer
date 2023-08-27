@@ -52,13 +52,6 @@ func (th *Workspace) CloseDocument(id string) error {
 	if !ok {
 		return nil
 	}
-	old, ok := th.documents[id]
-	if !ok {
-		return nil
-	}
-	if old != doc {
-		return nil
-	}
 
 	if th.activeDocument == doc {
 		th.ActiveDocument(id, false)

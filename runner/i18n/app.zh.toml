@@ -38,6 +38,12 @@ Title = "树视角"
 [Document]
 Untitle = "未命名文档"
 
+[Document.Editor]
+File = "文件"
+GenFilepath = "生成文件名"
+PackageName = "包名"
+FuncName = "函数名"
+
 [Dialog.ChangeWorkspaceDir]
 Title = "更换工作区目录"
 Label = "目录"

@@ -27,6 +27,7 @@ type Document struct {
 	Filepath    string
 	GenFilepath string
 	PackageName string
+	FuncName    string
 	Root        *Element
 
 	title string
@@ -40,6 +41,10 @@ func (th *Document) OnCreate(info *noc.ComponentInfo) {
 	th.BaseComponent.OnCreate(info)
 	info.Flag.Set(noc.FLAG_DONT_DELETE)
 	info.GetObject().MainData = th
+}
+
+func (th *Document) GetWorkspace() *Workspace {
+	return th.Info().GetObject().GetNode().MainData.(*Workspace)
 }
 
 func (th *Document) GetId() string {

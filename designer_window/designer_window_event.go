@@ -10,6 +10,8 @@ func (dw *DesignerWindow) onWorkspaceEvent(ev workspace.WSEvent) {
 		dw.toolp.docView.addDocument(ev.Data.(*workspace.Document))
 	case workspace.EVENT_DOC_CLOSE:
 		dw.toolp.docView.removeDocument(ev.Data.(*workspace.Document))
+	case workspace.EVENT_DOC_UPDATE:
+		dw.toolp.docView.updateDocument(ev.Data.(*workspace.Document))
 	case workspace.EVENT_DOC_ACTIVE:
 		if ev.Data == nil {
 			dw.inspector.Unbind(dw.docbid)

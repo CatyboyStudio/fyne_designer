@@ -3,6 +3,7 @@ package designer_window
 import (
 	"fmt"
 	"fyne_designer/workspace"
+	"slices"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -11,7 +12,6 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/gookit/goutil/arrutil"
 )
 
 func DocumentViewItem_SplitData(s string) (string, string) {
@@ -115,14 +115,16 @@ func (th *DocumentView) Build() fyne.CanvasObject {
 		},
 	)
 	th.docList = list
-	list.OnSelected = func(id widget.ListItemID) {
-		s, _ := th.docs.GetValue(id)
-		docid, _ := DocumentViewItem_SplitData(s)
-		InvokeWorkspaceTask(func(w *workspace.Workspace) (any, error) {
-			return nil, w.ActiveDocument(docid, true)
-		})
-	}
+	list.OnSelected = th.onSelected
 	return list
+}
+
+func (th *DocumentView) onSelected(id widget.ListItemID) {
+	s, _ := th.docs.GetValue(id)
+	docid, _ := DocumentViewItem_SplitData(s)
+	InvokeWorkspaceTask(func(w *workspace.Workspace) (any, error) {
+		return nil, w.ActiveDocument(docid, true)
+	})
 }
 
 func (th *DocumentView) addDocument(doc *workspace.Document) {
@@ -133,11 +135,34 @@ func (th *DocumentView) addDocument(doc *workspace.Document) {
 }
 
 func (th *DocumentView) removeDocument(doc *workspace.Document) {
-	ss := DocumentViewItem_MakeData(doc.GetId(), doc.GetTitle())
-	if ss != "" {
-		slist, _ := th.docs.Get()
-		nlist := arrutil.StringsRemove(slist, ss)
-		th.docs.Set(nlist)
+	sel := th.docList.Selected()
+	slist, _ := th.docs.Get()
+	docid := doc.GetId()
+	idx := slices.IndexFunc(slist, func(s string) bool {
+		id, _ := DocumentViewItem_SplitData(s)
+		return id == docid
+	})
+	nlist := slices.Delete(slist, idx, idx+1)
+	th.docs.Set(nlist)
+	th.docList.Refresh()
+
+	if slices.Index(sel, idx) != -1 {
+		if idx < len(nlist) {
+			th.onSelected(idx)
+		}
+	}
+}
+
+func (th *DocumentView) updateDocument(doc *workspace.Document) {
+	slist, _ := th.docs.Get()
+	docid := doc.GetId()
+	idx := slices.IndexFunc(slist, func(s string) bool {
+		id, _ := DocumentViewItem_SplitData(s)
+		return id == docid
+	})
+	if idx >= 0 {
+		s := DocumentViewItem_MakeData(docid, doc.GetTitle())
+		th.docs.SetValue(idx, s)
 		th.docList.Refresh()
 	}
 }

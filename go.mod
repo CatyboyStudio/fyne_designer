@@ -35,7 +35,6 @@ require (
 require (
 	github.com/BurntSushi/toml v1.3.2
 	github.com/dave/jennifer v1.7.0
-	github.com/gookit/goutil v0.6.12
 	github.com/pkg/errors v0.9.1
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
